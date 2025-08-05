@@ -14,6 +14,9 @@ export type AllowedChainIds = (typeof scaffoldConfig.targetNetworks)[number]["id
 
 // Mapping of chainId to RPC chain name an format followed by alchemy and infura
 export const RPC_CHAIN_NAMES: Record<number, string> = {
+  // Oasis Sapphire networks
+  0x5afe: "sapphire-mainnet",
+  0x5aff: "sapphire-testnet",
   [chains.mainnet.id]: "eth-mainnet",
   [chains.goerli.id]: "eth-goerli",
   [chains.sepolia.id]: "eth-sepolia",
@@ -43,6 +46,13 @@ export const getAlchemyHttpUrl = (chainId: number) => {
 };
 
 export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
+  // Oasis Sapphire networks
+  0x5afe: {
+    color: "#00ff88",
+  },
+  0x5aff: {
+    color: "#00ff88",
+  },
   [chains.hardhat.id]: {
     color: "#b8af0c",
   },

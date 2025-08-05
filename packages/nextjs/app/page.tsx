@@ -1,6 +1,7 @@
 "use client";
 
 import { ChatBox, ResultPanel } from "../components/llama";
+import { SubscribeButton } from "../components/scaffold-eth/SubscribeButton";
 import { useChat } from "../hooks/llama";
 import type { NextPage } from "next";
 
@@ -10,9 +11,9 @@ const Home: NextPage = () => {
   return (
     <>
       <div className="flex flex-col h-full pt-16">
-        {/* Empty space for future UI - above chatbox */}
-        <div className="w-full h-32 bg-base-200 rounded-lg mb-4 flex items-center justify-center">
-          <p className="text-base-content/60">Empty space for your UI</p>
+        {/* Subscribe Button */}
+        <div className="w-full mb-4">
+          <SubscribeButton />
         </div>
 
         {/* Main content area with chatbox and result tab */}

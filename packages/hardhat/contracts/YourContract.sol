@@ -19,9 +19,15 @@ contract YourContract {
     bool public premium = false;
     uint256 public totalCounter = 0;
     mapping(address => uint) public userGreetingCounter;
+    
+    // Subscription state
+    mapping(address => bool) public subscribers;
+    uint256 public subscriptionPrice = 1 ether; // 1 ROSE token (1 ether = 1 ROSE on Sapphire)
+    uint256 public totalSubscribers = 0;
 
     // Events: a way to emit log statements from smart contract that can be listened to by external parties
     event GreetingChange(address indexed greetingSetter, string newGreeting, bool premium, uint256 value);
+    event SubscriptionChanged(address indexed subscriber, bool subscribed, uint256 value);
 
     // Constructor: Called once on contract deployment
     // Check packages/hardhat/deploy/00_deploy_your_contract.ts
@@ -75,4 +81,45 @@ contract YourContract {
      * Function that allows the contract to receive ETH
      */
     receive() external payable {}
+    
+    /**
+     * Function to subscribe to the service
+     * Requires payment of subscriptionPrice
+     */
+    function subscribe() public payable {
+        require(msg.value >= subscriptionPrice, "Insufficient payment for subscription");
+        require(!subscribers[msg.sender], "Already subscribed");
+        
+        subscribers[msg.sender] = true;
+        totalSubscribers += 1;
+        
+        emit SubscriptionChanged(msg.sender, true, msg.value);
+    }
+    
+    /**
+     * Function to unsubscribe from the service
+     * Only subscribed users can unsubscribe
+     */
+    function unsubscribe() public {
+        require(subscribers[msg.sender], "Not subscribed");
+        
+        subscribers[msg.sender] = false;
+        totalSubscribers -= 1;
+        
+        emit SubscriptionChanged(msg.sender, false, 0);
+    }
+    
+    /**
+     * Function to check if an address is subscribed
+     */
+    function isSubscribed(address _user) public view returns (bool) {
+        return subscribers[_user];
+    }
+    
+    /**
+     * Function to get subscription price (owner only)
+     */
+    function setSubscriptionPrice(uint256 _newPrice) public isOwner {
+        subscriptionPrice = _newPrice;
+    }
 }
