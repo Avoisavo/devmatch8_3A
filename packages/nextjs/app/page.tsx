@@ -1,8 +1,12 @@
 "use client";
 
+import { ChatBox, ResultPanel } from "../components/llama";
+import { useChat } from "../hooks/llama";
 import type { NextPage } from "next";
 
 const Home: NextPage = () => {
+  const { messages, isLoading, error, clearMessages } = useChat();
+
   return (
     <>
       <div className="flex items-center flex-col grow pt-10">
@@ -15,26 +19,11 @@ const Home: NextPage = () => {
         <div className="w-full flex gap-6 mb-8">
           {/* Chatbox area */}
           <div className="flex-1">
-            <div className="bg-base-100 rounded-lg p-4 min-h-[300px] flex flex-col">
-              <div className="flex-1 mb-4">
-                <textarea
-                  className="w-full h-full p-3 bg-base-200 rounded border border-base-300 resize-none"
-                  placeholder="Type your message here..."
-                />
-              </div>
-              <div className="flex justify-end">
-                <button className="btn btn-primary">Send</button>
-              </div>
-            </div>
+            <ChatBox />
           </div>
 
           {/* Result tab area */}
-          <div className="w-80 bg-base-100 rounded-lg p-4">
-            <h3 className="text-lg font-semibold mb-4">Results</h3>
-            <div className="bg-base-200 rounded p-3 min-h-[250px]">
-              <p className="text-base-content/60">Results will appear here</p>
-            </div>
-          </div>
+          <ResultPanel messages={messages} isLoading={isLoading} error={error} onClear={clearMessages} />
         </div>
       </div>
     </>
