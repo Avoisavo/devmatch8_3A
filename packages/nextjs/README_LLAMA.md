@@ -1,6 +1,6 @@
-# Llama Integration with Scaffold-ETH 2
+# Llama Integration with Three AI Personalities
 
-This integration allows you to chat with local Llama models using Ollama in your Scaffold-ETH 2 application.
+This integration allows you to chat with local Llama models using Ollama in your Scaffold-ETH 2 application, featuring three distinct AI personalities that respond sequentially to create dynamic conversations.
 
 ## 🚀 Quick Start
 
@@ -34,7 +34,7 @@ yarn start
 ### 5. Test the Integration
 1. Open your browser: http://localhost:3000/
 2. Type a message in the chatbox
-3. Watch the AI respond in real-time!
+3. Watch as all three AI personalities respond in sequence!
 
 ## 📁 File Structure
 
@@ -53,7 +53,8 @@ packages/nextjs/
 ├── types/
 │   └── llama.ts            # TypeScript interfaces
 ├── utils/
-│   └── llama.ts            # Ollama utilities
+│   ├── llama.ts            # Ollama utilities
+│   └── aiPersonalities.ts  # AI personality configurations
 └── app/page.tsx            # Main page with chat interface
 ```
 
@@ -71,11 +72,30 @@ Edit `packages/nextjs/utils/llama.ts` to change the default model:
 export const DEFAULT_MODEL = 'your-model-name';
 ```
 
+## 🎭 AI Personalities
+
+### 1. **The Helper** (First Speaker)
+- **Personality**: Friendly, helpful, gives immediate responses
+- **Behavior**: Responds first to user messages
+- **Delay**: 0 seconds
+
+### 2. **The Thinker** (Second Speaker)
+- **Personality**: Analytical, thoughtful, adds insights
+- **Behavior**: Waits 2 seconds, then adds to the conversation
+- **Delay**: 2 seconds
+
+### 3. **The Curious One** (Third Speaker)
+- **Personality**: Always curious, asks follow-up questions
+- **Behavior**: Always asks a relevant question at the end
+- **Delay**: 4 seconds
+
 ## 🎯 Features
 
+- **Three AI Personalities**: Sequential responses from different AI characters
 - **Real-time streaming**: Responses appear as they're generated
 - **Error handling**: Clear error messages for connection issues
 - **Message history**: View all conversation messages
+- **Personality badges**: Visual indicators for each AI personality
 - **Responsive design**: Works on desktop and mobile
 - **TypeScript support**: Full type safety
 

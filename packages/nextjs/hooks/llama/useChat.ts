@@ -29,6 +29,21 @@ export const useChat = () => {
     }));
   }, []);
 
+  const addAIMessage = useCallback((content: string, personality: "helper" | "thinker" | "curious") => {
+    const newMessage: ChatMessage = {
+      id: generateUniqueId("assistant"),
+      role: "assistant",
+      content,
+      timestamp: new Date(),
+      aiPersonality: personality,
+    };
+
+    setState((prev: ChatState) => ({
+      ...prev,
+      messages: [...prev.messages, newMessage],
+    }));
+  }, []);
+
   const updateLastMessage = useCallback((content: string) => {
     setState((prev: ChatState) => ({
       ...prev,
@@ -55,6 +70,7 @@ export const useChat = () => {
     isLoading: state.isLoading,
     error: state.error,
     addMessage,
+    addAIMessage,
     updateLastMessage,
     setLoading,
     setError,

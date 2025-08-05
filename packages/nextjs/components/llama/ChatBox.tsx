@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { useChat, useOllama } from "../../hooks/llama";
 import type { OllamaMessage } from "../../types/llama";
+import { AI_PERSONALITIES } from "../../utils/aiPersonalities";
 import { MessageInput } from "./MessageInput";
 import { MessageList } from "./MessageList";
 
 export const ChatBox = () => {
-  const { messages, isLoading, addMessage, updateLastMessage, setLoading, setError } = useChat();
-  const { sendMessage, testConnection } = useOllama();
+  const { messages, isLoading, addMessage, addAIMessage, updateLastMessage, setLoading, setError } = useChat();
+  const { sendMessageWithPersonality, testConnection } = useOllama();
 
   useEffect(() => {
     // Test connection on mount
@@ -22,7 +23,7 @@ export const ChatBox = () => {
       setError(null);
       setLoading(true);
 
-      // Add user message with unique ID
+      // Add user message
       addMessage({ role: "user", content });
 
       // Prepare messages for Ollama
@@ -32,33 +33,41 @@ export const ChatBox = () => {
       }));
       ollamaMessages.push({ role: "user", content });
 
-      // Add assistant message placeholder with unique ID
-      addMessage({ role: "assistant", content: "" });
+      // Sequential AI responses with different personalities
+      for (const personality of AI_PERSONALITIES) {
+        // Wait for the specified delay
+        if (personality.delay > 0) {
+          await new Promise(resolve => setTimeout(resolve, personality.delay));
+        }
 
-      // Stream the response
-      let fullResponse = "";
-      await sendMessage(ollamaMessages, "gemma3:4b", (chunk: string) => {
-        fullResponse += chunk;
+        // Add placeholder message for this AI personality
+        addAIMessage("", personality.id);
+
+        // Stream the response for this personality
+        let fullResponse = "";
+        await sendMessageWithPersonality(ollamaMessages, personality.id, "gemma3:4b", (chunk: string) => {
+          fullResponse += chunk;
+          updateLastMessage(fullResponse);
+        });
+
+        // Update the final response
         updateLastMessage(fullResponse);
-      });
+
+        // Add a small delay between AI responses
+        if (personality.id !== "curious") {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to send message");
-      // Remove the empty assistant message if there was an error
-      if (
-        messages.length > 0 &&
-        messages[messages.length - 1].role === "assistant" &&
-        messages[messages.length - 1].content === ""
-      ) {
-        // This would need a removeLastMessage function, but for now we'll just set an error
-      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-base-100 rounded-lg p-4 min-h-[300px] flex flex-col">
-      <div className="flex-1 mb-4 overflow-y-auto">
+    <div className="bg-base-100 rounded-lg p-4 h-full flex flex-col">
+      <div className="flex-1 mb-4 overflow-y-auto min-h-0">
         <MessageList messages={messages} />
       </div>
       <MessageInput onSendMessage={handleSendMessage} isLoading={isLoading} />

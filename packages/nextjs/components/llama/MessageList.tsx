@@ -1,4 +1,5 @@
 import type { ChatMessage } from "../../types/llama";
+import { getAIPersonality } from "../../utils/aiPersonalities";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -22,6 +23,13 @@ export const MessageList = ({ messages }: MessageListProps) => {
               message.role === "user" ? "bg-primary text-primary-content" : "bg-base-200 text-base-content"
             }`}
           >
+            {message.role === "assistant" && message.aiPersonality && (
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-semibold px-2 py-1 rounded-full bg-secondary text-secondary-content">
+                  {getAIPersonality(message.aiPersonality).name}
+                </span>
+              </div>
+            )}
             <p className="whitespace-pre-wrap break-words">{message.content}</p>
             <div className="flex justify-between items-center mt-1">
               <p className="text-xs opacity-70">{message.timestamp.toLocaleTimeString()}</p>

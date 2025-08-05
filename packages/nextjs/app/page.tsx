@@ -9,16 +9,16 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <div className="flex items-center flex-col grow pt-10">
+      <div className="flex flex-col h-full pt-16">
         {/* Empty space for future UI - above chatbox */}
-        <div className="w-full min-h-[400px] bg-base-200 rounded-lg mb-8 flex items-center justify-center">
+        <div className="w-full h-32 bg-base-200 rounded-lg mb-4 flex items-center justify-center">
           <p className="text-base-content/60">Empty space for your UI</p>
         </div>
 
         {/* Main content area with chatbox and result tab */}
-        <div className="w-full flex gap-6 mb-8">
+        <div className="w-full flex gap-6 flex-1 min-h-0">
           {/* Chatbox area */}
-          <div className="flex-1">
+          <div className="flex-1 min-h-0">
             <ChatBox />
           </div>
 

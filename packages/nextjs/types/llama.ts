@@ -36,6 +36,15 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  aiPersonality?: "helper" | "thinker" | "curious";
+}
+
+export interface AIPersonality {
+  id: "helper" | "thinker" | "curious";
+  name: string;
+  prompt: string;
+  delay: number;
+  description: string;
 }
 
 export interface ChatState {
