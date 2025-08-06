@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAccount } from "wagmi";
+import SkyBackground from "~~/components/livingroom/SkyBackground";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -19,11 +20,6 @@ export const SubscribeButton = () => {
     contractName: "YourContract",
     functionName: "isSubscribed",
     args: [address],
-  });
-
-  const { data: totalSubscribers } = useScaffoldReadContract({
-    contractName: "YourContract",
-    functionName: "totalSubscribers",
   });
 
   // Write contract functions
@@ -86,36 +82,18 @@ export const SubscribeButton = () => {
     }
   };
 
-  const formatEther = (value: bigint | undefined) => {
-    if (!value) return "0";
-    return (Number(value) / 1e18).toFixed(4);
-  };
-
   return (
-    <div className="flex flex-col gap-4 p-6 bg-base-200 rounded-lg">
-      <h3 className="text-xl font-bold">Subscription Service</h3>
-
-      <div className="stats shadow">
-        <div className="stat">
-          <div className="stat-title">Total Subscribers</div>
-          <div className="stat-value text-primary">{totalSubscribers?.toString() || "0"}</div>
-        </div>
-        <div className="stat">
-          <div className="stat-title">Subscription Price</div>
-          <div className="stat-value text-secondary">{formatEther(subscriptionPrice)} ETH</div>
+    <div className="flex flex-col gap-4 p-6 bg-base-200 rounded-lg h-full relative">
+      {/* Sky Background area - full screen */}
+      <div className="flex-1 bg-base-100 rounded-lg border-2 border-solid border-base-300 relative overflow-hidden">
+        {/* Sky Background */}
+        <div className="absolute inset-0">
+          <SkyBackground />
         </div>
       </div>
 
+      {/* Subscribe button section */}
       <div className="flex flex-col gap-2">
-        {address && (
-          <div className="text-sm">
-            Your Status:{" "}
-            <span className={isSubscribed ? "text-success font-bold" : "text-error font-bold"}>
-              {isSubscribed ? "Subscribed" : "Not Subscribed"}
-            </span>
-          </div>
-        )}
-
         <div className="flex gap-2">
           <button
             className={`btn btn-primary ${isLoading ? "loading" : ""}`}

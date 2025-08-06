@@ -34,10 +34,10 @@ export const MessageInput = ({
           value={message}
           onChange={e => setMessage(e.target.value)}
           onKeyPress={handleKeyPress}
-          className="w-full h-full p-3 bg-base-200 rounded border border-base-300 resize-none"
+          className="w-full p-3 bg-base-200 rounded border border-base-300 resize-none"
           placeholder={placeholder}
           disabled={isLoading}
-          rows={3}
+          rows={1}
         />
       </div>
       <div className="flex justify-end">

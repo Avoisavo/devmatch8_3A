@@ -24,15 +24,7 @@ const deployerPrivateKey =
 const etherscanApiKey = process.env.ETHERSCAN_V2_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
 
 //pass saphire key
-const accounts = process.env.PRIVATE_KEY
-  ? [process.env.PRIVATE_KEY]
-  : {
-      mnemonic: "test test test test test test test test test test test junk",
-      path: "m/44'/60'/0'/0",
-      initialIndex: 0,
-      count: 20,
-      passphrase: "",
-    };
+const accounts = process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [deployerPrivateKey]; // Use default deployer key for Sapphire networks
 
 const config: HardhatUserConfig = {
   solidity: {

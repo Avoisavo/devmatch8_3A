@@ -10,21 +10,22 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <div className="flex flex-col h-full pt-16">
-        {/* Subscribe Button */}
-        <div className="w-full mb-4">
+      <div className="flex flex-col h-full pt-16 relative">
+        {/* Subscribe Button with Sky Background */}
+        <div className="w-full mb-4 flex-1">
           <SubscribeButton />
         </div>
 
-        {/* Main content area with chatbox and result tab */}
-        <div className="w-full flex gap-6 flex-1 min-h-0">
-          {/* Chatbox area */}
-          <div className="flex-1 min-h-0">
+        {/* Result panel area */}
+        <div className="w-full mb-4">
+          <ResultPanel messages={messages} isLoading={isLoading} error={error} onClear={clearMessages} />
+        </div>
+
+        {/* ChatBox fixed at bottom overlaying the sky */}
+        <div className="fixed bottom-4 left-4 right-4 z-50 h-80">
+          <div className="bg-base-100/90 backdrop-blur-sm rounded-lg border border-base-300 shadow-lg h-full">
             <ChatBox />
           </div>
-
-          {/* Result tab area */}
-          <ResultPanel messages={messages} isLoading={isLoading} error={error} onClear={clearMessages} />
         </div>
       </div>
     </>
