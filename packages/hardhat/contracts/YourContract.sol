@@ -10,6 +10,7 @@ import "hardhat/console.sol";
 /**
  * A smart contract that allows changing a state variable of the contract and tracking the changes
  * It also allows the owner to withdraw the Ether in the contract
+ * Includes subscription functionality that deducts 1 ROSE token
  * @author BuidlGuidl
  */
 contract YourContract {
@@ -22,7 +23,7 @@ contract YourContract {
     
     // Subscription state
     mapping(address => bool) public subscribers;
-    uint256 public subscriptionPrice = 1 ether; // 1 ROSE token (1 ether = 1 ROSE on Sapphire)
+    uint256 public subscriptionPrice = 1 ether; // 1 ROSE token (18 decimals)
     uint256 public totalSubscribers = 0;
 
     // Events: a way to emit log statements from smart contract that can be listened to by external parties
@@ -84,10 +85,10 @@ contract YourContract {
     
     /**
      * Function to subscribe to the service
-     * Requires payment of subscriptionPrice
+     * Requires payment of 1 ROSE token
      */
     function subscribe() public payable {
-        require(msg.value >= subscriptionPrice, "Insufficient payment for subscription");
+        require(msg.value >= subscriptionPrice, "Insufficient payment: 1 ROSE token required");
         require(!subscribers[msg.sender], "Already subscribed");
         
         subscribers[msg.sender] = true;
@@ -110,14 +111,14 @@ contract YourContract {
     }
     
     /**
-     * Function to check if an address is subscribed
+     * Function to check if a user is subscribed
      */
     function isSubscribed(address _user) public view returns (bool) {
         return subscribers[_user];
     }
     
     /**
-     * Function to get subscription price (owner only)
+     * Function to set subscription price (owner only)
      */
     function setSubscriptionPrice(uint256 _newPrice) public isOwner {
         subscriptionPrice = _newPrice;

@@ -52,10 +52,10 @@ export const SubscribeButton = () => {
         functionName: "subscribe",
         value: subscriptionPrice,
       });
-      notification.success("Successfully subscribed! You paid 1 ROSE token.");
+      notification.success("Successfully subscribed!");
     } catch (error) {
       console.error("Subscribe error:", error);
-      notification.error("Failed to subscribe. Make sure you have enough ROSE tokens.");
+      notification.error("Failed to subscribe");
     } finally {
       setIsLoading(false);
     }
@@ -88,12 +88,12 @@ export const SubscribeButton = () => {
 
   const formatEther = (value: bigint | undefined) => {
     if (!value) return "0";
-    return (Number(value) / 1e18).toFixed(0);
+    return (Number(value) / 1e18).toFixed(4);
   };
 
   return (
     <div className="flex flex-col gap-4 p-6 bg-base-200 rounded-lg">
-      <h3 className="text-xl font-bold">🌹 ROSE Subscription Service</h3>
+      <h3 className="text-xl font-bold">Subscription Service</h3>
 
       <div className="stats shadow">
         <div className="stat">
@@ -102,7 +102,7 @@ export const SubscribeButton = () => {
         </div>
         <div className="stat">
           <div className="stat-title">Subscription Price</div>
-          <div className="stat-value text-secondary">{formatEther(subscriptionPrice)} ROSE</div>
+          <div className="stat-value text-secondary">{formatEther(subscriptionPrice)} ETH</div>
         </div>
       </div>
 
@@ -122,7 +122,7 @@ export const SubscribeButton = () => {
             onClick={handleSubscribe}
             disabled={isLoading || !address || isSubscribed}
           >
-            {isLoading ? "Processing..." : "Subscribe (1 ROSE)"}
+            {isLoading ? "Processing..." : "Subscribe"}
           </button>
 
           <button
@@ -135,10 +135,6 @@ export const SubscribeButton = () => {
         </div>
 
         {!address && <div className="text-sm text-warning">Please connect your wallet to subscribe</div>}
-
-        <div className="text-xs text-base-content/60 mt-2">
-          💡 Subscription costs 1 ROSE token. Make sure you have enough balance!
-        </div>
       </div>
     </div>
   );

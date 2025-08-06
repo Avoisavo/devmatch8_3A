@@ -1,6 +1,6 @@
 import * as chains from "viem/chains";
 
-// Define Oasis Sapphire networks
+// Define Sapphire networks
 const sapphireMainnet = {
   id: 0x5afe,
   name: "Oasis Sapphire",
@@ -13,9 +13,6 @@ const sapphireMainnet = {
   rpcUrls: {
     default: { http: ["https://sapphire.oasis.io"] },
     public: { http: ["https://sapphire.oasis.io"] },
-  },
-  blockExplorers: {
-    default: { name: "Oasis Explorer", url: "https://explorer.oasis.io" },
   },
 } as const;
 
@@ -31,9 +28,6 @@ const sapphireTestnet = {
   rpcUrls: {
     default: { http: ["https://testnet.sapphire.oasis.io"] },
     public: { http: ["https://testnet.sapphire.oasis.io"] },
-  },
-  blockExplorers: {
-    default: { name: "Oasis Testnet Explorer", url: "https://testnet.explorer.oasis.io" },
   },
 } as const;
 
@@ -52,7 +46,7 @@ export const DEFAULT_ALCHEMY_API_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  targetNetworks: [chains.hardhat, sapphireTestnet, sapphireMainnet],
+  targetNetworks: [sapphireTestnet, sapphireMainnet, chains.hardhat],
   // The interval at which your front-end polls the RPC servers for new data (it has no effect if you only target the local network (default is 4000))
   pollingInterval: 30000,
   // This is ours Alchemy's default API key.
@@ -71,7 +65,7 @@ const scaffoldConfig = {
   // It's recommended to store it in an env variable:
   // .env.local for local testing, and in the Vercel/system env config for live apps.
   walletConnectProjectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "3a8170812b534d0ff9d794f19a901d64",
-  onlyLocalBurnerWallet: false, // Set to false to allow burner wallet on Sapphire networks
+  onlyLocalBurnerWallet: true,
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;

@@ -11,6 +11,7 @@ import "hardhat-deploy";
 import "hardhat-deploy-ethers";
 import { task } from "hardhat/config";
 import generateTsAbis from "./scripts/generateTsAbis";
+import "@oasisprotocol/sapphire-hardhat";
 
 // If not set, it uses ours Alchemy's default API key.
 // You can get your own at https://dashboard.alchemyapi.io
@@ -61,15 +62,11 @@ const config: HardhatUserConfig = {
       url: "https://sapphire.oasis.io",
       chainId: 0x5afe,
       accounts,
-      gasPrice: 1000000000, // 1 gwei
-      gas: 8000000, // 8M gas limit
     },
     "sapphire-testnet": {
       url: "https://testnet.sapphire.oasis.io",
       accounts,
       chainId: 0x5aff,
-      gasPrice: 1000000000, // 1 gwei
-      gas: 5000000, // 5M gas limit (reduced)
     },
     "sapphire-localnet": {
       // docker run -it -p8544-8548:8544-8548 ghcr.io/oasisprotocol/sapphire-localnet
