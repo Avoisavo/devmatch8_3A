@@ -1,6 +1,6 @@
 import * as chains from "viem/chains";
 
-// Define Sapphire networks
+// Define Sapphire networks manually since they're not in the wagmi package
 const sapphireMainnet = {
   id: 0x5afe,
   name: "Oasis Sapphire",
@@ -13,6 +13,9 @@ const sapphireMainnet = {
   rpcUrls: {
     default: { http: ["https://sapphire.oasis.io"] },
     public: { http: ["https://sapphire.oasis.io"] },
+  },
+  blockExplorers: {
+    default: { name: "Oasis Sapphire Explorer", url: "https://explorer.sapphire.oasis.io" },
   },
 } as const;
 
@@ -29,6 +32,10 @@ const sapphireTestnet = {
     default: { http: ["https://testnet.sapphire.oasis.io"] },
     public: { http: ["https://testnet.sapphire.oasis.io"] },
   },
+  blockExplorers: {
+    default: { name: "Oasis Sapphire Testnet Explorer", url: "https://testnet.explorer.sapphire.oasis.io" },
+  },
+  testnet: true,
 } as const;
 
 export type BaseConfig = {

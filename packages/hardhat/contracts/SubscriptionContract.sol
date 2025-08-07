@@ -18,6 +18,7 @@ contract SubscriptionContract {
     // Subscription tracking
     mapping(address => bool) public subscribers;
     mapping(address => uint256) public subscriptionTimestamp;
+    mapping(address => uint256) public subscriptionCount;
     
     // Events
     event SubscriptionPurchased(address indexed subscriber, uint256 amount, uint256 timestamp);
@@ -37,10 +38,7 @@ contract SubscriptionContract {
         _;
     }
 
-    modifier notAlreadySubscribed() {
-        require(!subscribers[msg.sender], "Already subscribed");
-        _;
-    }
+
 
     modifier isSubscribed() {
         require(subscribers[msg.sender], "Not subscribed");
@@ -49,17 +47,23 @@ contract SubscriptionContract {
 
     /**
      * Function to subscribe to the service
-     * Requires exactly 1 ROSE token payment
+     * Users can subscribe multiple times to extend their subscription
+     * Requires exactly 1 ROSE token payment per subscription
      */
-    function subscribe() public payable notAlreadySubscribed {
+    function subscribe() public payable {
         require(msg.value >= subscriptionPrice, "Insufficient payment: 1 ROSE token required");
         
         console.log("New subscription from:", msg.sender, "Amount:", msg.value);
         
-        // Mark user as subscribed
+        // Track subscription - first time subscribers increment total count
+        if (!subscribers[msg.sender]) {
+            totalSubscribers += 1;
+        }
+        
+        // Mark user as subscribed and update timestamp
         subscribers[msg.sender] = true;
         subscriptionTimestamp[msg.sender] = block.timestamp;
-        totalSubscribers += 1;
+        subscriptionCount[msg.sender] += 1;
         
         // Refund excess payment if any
         if (msg.value > subscriptionPrice) {
@@ -95,6 +99,13 @@ contract SubscriptionContract {
     function getSubscriptionTime(address _user) public view returns (uint256) {
         require(subscribers[_user], "User not subscribed");
         return subscriptionTimestamp[_user];
+    }
+
+    /**
+     * Get subscription count for a user
+     */
+    function getSubscriptionCount(address _user) public view returns (uint256) {
+        return subscriptionCount[_user];
     }
 
     /**

@@ -1,4 +1,4 @@
-import { wagmiConnectors } from "./wagmiConnectors";
+import { injectedWithSapphire, sapphireHttpTransport } from "@oasisprotocol/sapphire-wagmi-v2";
 import { Chain, createClient, fallback, http } from "viem";
 import { hardhat, mainnet } from "viem/chains";
 import { createConfig } from "wagmi";
@@ -14,9 +14,20 @@ export const enabledChains = targetNetworks.find((network: Chain) => network.id 
 
 export const wagmiConfig = createConfig({
   chains: enabledChains,
-  connectors: wagmiConnectors,
+  connectors: [injectedWithSapphire()],
   ssr: true,
   client: ({ chain }) => {
+    // Use Sapphire transport for Sapphire networks
+    if (chain.id === 0x5afe || chain.id === 0x5aff) {
+      // Sapphire mainnet and testnet
+      return createClient({
+        chain,
+        transport: sapphireHttpTransport(),
+        ...(chain.id !== (hardhat as Chain).id ? { pollingInterval: scaffoldConfig.pollingInterval } : {}),
+      });
+    }
+
+    // Default transport for other networks
     let rpcFallbacks = [http()];
     const rpcOverrideUrl = (scaffoldConfig.rpcOverrides as ScaffoldConfig["rpcOverrides"])?.[chain.id];
     if (rpcOverrideUrl) {

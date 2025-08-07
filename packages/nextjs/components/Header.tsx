@@ -6,9 +6,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { parseEther } from "viem";
 import { hardhat } from "viem/chains";
-import { useAccount } from "wagmi";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { Bars3Icon, BugAntIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
-import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import { FaucetButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
@@ -69,6 +69,8 @@ export const Header = () => {
   const { targetNetwork } = useTargetNetwork();
   const isLocalNetwork = targetNetwork.id === hardhat.id;
   const { address } = useAccount();
+  const { connect, connectors, isPending } = useConnect();
+  const { disconnect } = useDisconnect();
   const [isLoading, setIsLoading] = useState(false);
 
   const burgerMenuRef = useRef<HTMLDetailsElement>(null);
@@ -83,6 +85,13 @@ export const Header = () => {
     args: [address],
   });
 
+  // Get subscription count
+  const { data: subscriptionCount } = useScaffoldReadContract({
+    contractName: "SubscriptionContract",
+    functionName: "getSubscriptionCount",
+    args: [address],
+  });
+
   // Write contract function
   const { writeContractAsync: subscribeAsync } = useScaffoldWriteContract({
     contractName: "SubscriptionContract",
@@ -94,17 +103,21 @@ export const Header = () => {
       return;
     }
 
-    if (isSubscribed) {
-      notification.error("You are already subscribed");
-      return;
-    }
-
     try {
       setIsLoading(true);
-      await subscribeAsync({
+      const result = await subscribeAsync({
         functionName: "subscribe",
         value: parseEther("1"), // 1 ROSE token
       });
+
+      // Log transaction encryption status for Sapphire networks
+      const isSapphireNetwork = targetNetwork.id === 0x5afe || targetNetwork.id === 0x5aff;
+      if (isSapphireNetwork && result) {
+        console.log(`Transaction hash: ${result}`);
+        // Note: We'd need the transaction data to check encryption properly
+        console.log("✅ Transaction sent on Sapphire network (confidential by default)");
+      }
+
       notification.success("Successfully subscribed! 1 ROSE token deducted.");
     } catch (error) {
       console.error("Subscribe error:", error);
@@ -147,11 +160,37 @@ export const Header = () => {
         <button
           className={`btn btn-primary btn-sm ${isLoading ? "loading" : ""}`}
           onClick={handleSubscribe}
-          disabled={isLoading || !address || isSubscribed}
+          disabled={isLoading || !address}
         >
-          {isLoading ? "Processing..." : isSubscribed ? "Subscribed ✓" : "Subscribe (1 ROSE)"}
+          {isLoading
+            ? "Processing..."
+            : isSubscribed
+              ? `Subscribe Again (${subscriptionCount || 0} total)`
+              : "Subscribe (1 ROSE)"}
         </button>
-        <RainbowKitCustomConnectButton />
+
+        {/* Custom Connect Button */}
+        {address ? (
+          <div className="dropdown dropdown-end">
+            <button className="btn btn-primary btn-sm">
+              {address.slice(0, 6)}...{address.slice(-4)}
+            </button>
+            <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+              <li>
+                <button onClick={() => disconnect()}>Disconnect</button>
+              </li>
+            </ul>
+          </div>
+        ) : (
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => connect({ connector: connectors[0] })}
+            disabled={isPending}
+          >
+            {isPending ? "Connecting..." : "Connect Wallet"}
+          </button>
+        )}
+
         {isLocalNetwork && <FaucetButton />}
       </div>
     </div>
