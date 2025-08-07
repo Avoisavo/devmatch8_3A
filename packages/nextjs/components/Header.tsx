@@ -1,13 +1,17 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { parseEther } from "viem";
 import { hardhat } from "viem/chains";
+import { useAccount } from "wagmi";
 import { Bars3Icon, BugAntIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { notification } from "~~/utils/scaffold-eth";
 
 type HeaderMenuLink = {
   label: string;
@@ -64,11 +68,51 @@ export const HeaderMenuLinks = () => {
 export const Header = () => {
   const { targetNetwork } = useTargetNetwork();
   const isLocalNetwork = targetNetwork.id === hardhat.id;
+  const { address } = useAccount();
+  const [isLoading, setIsLoading] = useState(false);
 
   const burgerMenuRef = useRef<HTMLDetailsElement>(null);
   useOutsideClick(burgerMenuRef, () => {
     burgerMenuRef?.current?.removeAttribute("open");
   });
+
+  // Check if user is already subscribed
+  const { data: isSubscribed } = useScaffoldReadContract({
+    contractName: "SubscriptionContract",
+    functionName: "isUserSubscribed",
+    args: [address],
+  });
+
+  // Write contract function
+  const { writeContractAsync: subscribeAsync } = useScaffoldWriteContract({
+    contractName: "SubscriptionContract",
+  });
+
+  const handleSubscribe = async () => {
+    if (!address) {
+      notification.error("Please connect your wallet first");
+      return;
+    }
+
+    if (isSubscribed) {
+      notification.error("You are already subscribed");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await subscribeAsync({
+        functionName: "subscribe",
+        value: parseEther("1"), // 1 ROSE token
+      });
+      notification.success("Successfully subscribed! 1 ROSE token deducted.");
+    } catch (error) {
+      console.error("Subscribe error:", error);
+      notification.error("Failed to subscribe. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="fixed top-0 left-0 right-0 navbar bg-base-100 min-h-0 shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
@@ -99,7 +143,14 @@ export const Header = () => {
           <HeaderMenuLinks />
         </ul>
       </div>
-      <div className="navbar-end grow mr-4">
+      <div className="navbar-end grow mr-4 flex items-center gap-2">
+        <button
+          className={`btn btn-primary btn-sm ${isLoading ? "loading" : ""}`}
+          onClick={handleSubscribe}
+          disabled={isLoading || !address || isSubscribed}
+        >
+          {isLoading ? "Processing..." : isSubscribed ? "Subscribed ✓" : "Subscribe (1 ROSE)"}
+        </button>
         <RainbowKitCustomConnectButton />
         {isLocalNetwork && <FaucetButton />}
       </div>

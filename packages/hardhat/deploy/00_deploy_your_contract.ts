@@ -33,8 +33,8 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     // Add gas settings for Oasis Sapphire networks
     ...(hre.network.name.includes("sapphire")
       ? {
-          gasLimit: 1000000,
-          gasPrice: "10000000000", // 10 gwei - much lower
+          gasLimit: 2000000,
+          gasPrice: "100000000000", // 100 gwei
         }
       : {}),
   });
