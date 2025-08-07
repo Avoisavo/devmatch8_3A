@@ -1,5 +1,43 @@
 import * as chains from "viem/chains";
 
+// Define Sapphire networks manually since they're not in the wagmi package
+const sapphireMainnet = {
+  id: 0x5afe,
+  name: "Oasis Sapphire",
+  network: "sapphire",
+  nativeCurrency: {
+    decimals: 18,
+    name: "ROSE",
+    symbol: "ROSE",
+  },
+  rpcUrls: {
+    default: { http: ["https://sapphire.oasis.io"] },
+    public: { http: ["https://sapphire.oasis.io"] },
+  },
+  blockExplorers: {
+    default: { name: "Oasis Sapphire Explorer", url: "https://explorer.sapphire.oasis.io" },
+  },
+} as const;
+
+const sapphireTestnet = {
+  id: 0x5aff,
+  name: "Oasis Sapphire Testnet",
+  network: "sapphire-testnet",
+  nativeCurrency: {
+    decimals: 18,
+    name: "ROSE",
+    symbol: "ROSE",
+  },
+  rpcUrls: {
+    default: { http: ["https://testnet.sapphire.oasis.io"] },
+    public: { http: ["https://testnet.sapphire.oasis.io"] },
+  },
+  blockExplorers: {
+    default: { name: "Oasis Sapphire Testnet Explorer", url: "https://testnet.explorer.sapphire.oasis.io" },
+  },
+  testnet: true,
+} as const;
+
 export type BaseConfig = {
   targetNetworks: readonly chains.Chain[];
   pollingInterval: number;
@@ -15,7 +53,7 @@ export const DEFAULT_ALCHEMY_API_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  targetNetworks: [chains.hardhat],
+  targetNetworks: [sapphireTestnet, sapphireMainnet, chains.hardhat],
   // The interval at which your front-end polls the RPC servers for new data (it has no effect if you only target the local network (default is 4000))
   pollingInterval: 30000,
   // This is ours Alchemy's default API key.
