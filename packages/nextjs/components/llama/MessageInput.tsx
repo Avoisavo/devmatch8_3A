@@ -4,12 +4,16 @@ interface MessageInputProps {
   onSendMessage: (message: string) => void;
   isLoading?: boolean;
   placeholder?: string;
+  showEndChatButton?: boolean;
+  onEndChat?: () => void;
 }
 
 export const MessageInput = ({
   onSendMessage,
   isLoading = false,
   placeholder = "Type your message here...",
+  showEndChatButton = false,
+  onEndChat,
 }: MessageInputProps) => {
   const [message, setMessage] = useState("");
 
@@ -40,7 +44,12 @@ export const MessageInput = ({
           rows={1}
         />
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        {showEndChatButton && onEndChat && (
+          <button onClick={onEndChat} disabled={isLoading} className="btn btn-secondary px-4 py-2 min-w-fit">
+            {isLoading ? "Ending..." : "End Chat"}
+          </button>
+        )}
         <button onClick={handleSend} disabled={!message.trim() || isLoading} className="btn btn-primary">
           {isLoading ? "Sending..." : "Send"}
         </button>

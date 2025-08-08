@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import type { ChatSummary as StoredSummary } from "../utils/chatSummary";
+
 export interface ChatSummary {
   id: string;
   date: string;
@@ -10,17 +13,92 @@ export interface ChatSummary {
 }
 
 export const useChatSummariesLocalOnly = () => {
+  const [summaries, setSummaries] = useState<ChatSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const storedSummaries = JSON.parse(localStorage.getItem("chat-summaries") || "[]");
+
+      // Convert stored summaries to the expected format
+      const convertedSummaries: ChatSummary[] = storedSummaries.map((summary: StoredSummary) => ({
+        id: summary.id,
+        date: summary.timestamp.split("T")[0], // Extract date from timestamp
+        summary: summary.summary,
+        messageCount: summary.metadata.conversation_length,
+        participants: ["User", "Assistant"], // Default participants
+        tags: [], // No tags in stored summaries
+        createdAt: summary.timestamp,
+        title: `Chat Summary ${summary.id}`,
+      }));
+
+      setSummaries(convertedSummaries);
+    } catch (err) {
+      setError("Failed to load summaries");
+      console.error("Error loading summaries:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const deleteSummary = async (id: string) => {
+    try {
+      const updatedSummaries = summaries.filter(s => s.id !== id);
+      setSummaries(updatedSummaries);
+
+      // Update localStorage
+      const storedSummaries = JSON.parse(localStorage.getItem("chat-summaries") || "[]");
+      const updatedStoredSummaries = storedSummaries.filter((s: StoredSummary) => s.id !== id);
+      localStorage.setItem("chat-summaries", JSON.stringify(updatedStoredSummaries));
+    } catch (err) {
+      console.error("Error deleting summary:", err);
+    }
+  };
+
+  const updateSummary = (id: string, updates: Partial<ChatSummary>) => {
+    setSummaries(prev => prev.map(s => (s.id === id ? { ...s, ...updates } : s)));
+  };
+
+  const exportSummary = (summary: ChatSummary) => {
+    const dataStr = JSON.stringify(summary, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${summary.id}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const exportAllSummaries = () => {
+    const dataStr = JSON.stringify(summaries, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "all-summaries.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const clearAllSummaries = () => {
+    setSummaries([]);
+    localStorage.removeItem("chat-summaries");
+  };
+
   return {
-    summaries: [] as ChatSummary[],
-    loading: false,
-    error: null,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    deleteSummary: async (id: string) => {},
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    updateSummary: (id: string, updates: Partial<ChatSummary>) => {},
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    exportSummary: (summary: ChatSummary) => {},
-    exportAllSummaries: () => {},
-    clearAllSummaries: () => {},
+    summaries,
+    loading,
+    error,
+    deleteSummary,
+    updateSummary,
+    exportSummary,
+    exportAllSummaries,
+    clearAllSummaries,
   };
 };

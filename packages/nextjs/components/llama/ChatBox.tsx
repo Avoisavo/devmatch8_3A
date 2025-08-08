@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useChat, useOllama } from "../../hooks/llama";
 import type { OllamaMessage } from "../../types/llama";
 import { AI_PERSONALITIES } from "../../utils/aiPersonalities";
@@ -6,8 +6,9 @@ import { MessageInput } from "./MessageInput";
 import { MessageList } from "./MessageList";
 
 export const ChatBox = () => {
-  const { messages, isLoading, addMessage, addAIMessage, updateLastMessage, setLoading, setError } = useChat();
+  const { messages, isLoading, addMessage, addAIMessage, updateLastMessage, setLoading, setError, endChat } = useChat();
   const { sendMessageWithPersonality, testConnection } = useOllama();
+  const [showEndChatButton, setShowEndChatButton] = useState(false);
 
   useEffect(() => {
     // Test connection on mount (only on client side)
@@ -19,6 +20,11 @@ export const ChatBox = () => {
       });
     }
   }, [testConnection, setError]);
+
+  // Show end chat button when there are messages
+  useEffect(() => {
+    setShowEndChatButton(messages.length > 0);
+  }, [messages.length]);
 
   const handleSendMessage = async (content: string) => {
     try {
@@ -67,12 +73,29 @@ export const ChatBox = () => {
     }
   };
 
+  const handleEndChat = async () => {
+    try {
+      await endChat(sendMessageWithPersonality, summary => {
+        console.log("Chat summary generated:", summary);
+      });
+    } catch (error) {
+      console.error("Failed to end chat:", error);
+    }
+  };
+
   return (
     <div className="bg-base-100 rounded-lg p-4 h-full flex flex-col">
       <div className="flex-1 mb-4 overflow-y-auto min-h-0">
         <MessageList messages={messages} />
       </div>
-      <MessageInput onSendMessage={handleSendMessage} isLoading={isLoading} />
+      <div className="flex-1">
+        <MessageInput
+          onSendMessage={handleSendMessage}
+          isLoading={isLoading}
+          showEndChatButton={showEndChatButton}
+          onEndChat={handleEndChat}
+        />
+      </div>
     </div>
   );
 };
