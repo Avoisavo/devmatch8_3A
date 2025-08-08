@@ -14745,6 +14745,7 @@ __metadata:
     "@oasisprotocol/sapphire-paratime": ^2.2.0
     "@oasisprotocol/sapphire-viem-v2": ^2.1.0
     "@oasisprotocol/sapphire-wagmi-v2": ^2.1.0
+    hardhat: ~2.22.10
     husky: ~9.1.6
     lint-staged: ~13.2.2
     viem: 2.x
