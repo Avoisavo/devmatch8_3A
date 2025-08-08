@@ -1,7 +1,9 @@
 import { useCallback, useState } from "react";
+import { useSummaryCrypto } from "../../hooks/useSummaryCrypto";
 import type { ChatMessage, ChatState } from "../../types/llama";
+import { useScaffoldWriteContract } from "../scaffold-eth";
 
-// Helper function to generate unique IDs
+// Helper function to generate unique IDs (client-side only)
 const generateUniqueId = (role: "user" | "assistant"): string => {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substr(2, 9);
@@ -15,6 +17,10 @@ export const useChat = () => {
     isLoading: false,
     error: null,
   });
+  // Second-layer encryption (wallet-signature derived key)
+  const { encrypt } = useSummaryCrypto();
+  // Writer for Sapphire SummaryVault
+  const { writeContractAsync: writeSummaryAsync } = useScaffoldWriteContract({ contractName: "SummaryVault" });
 
   const addMessage = useCallback((message: Omit<ChatMessage, "id" | "timestamp">) => {
     const newMessage: ChatMessage = {
@@ -65,6 +71,64 @@ export const useChat = () => {
     setState((prev: ChatState) => ({ ...prev, messages: [] }));
   }, []);
 
+  const endChat = useCallback(
+    async (
+      sendMessageWithPersonality: (
+        messages: any[],
+        personality: "helper" | "thinker" | "curious",
+        model?: string,
+        onStream?: (chunk: string) => void,
+      ) => Promise<string | void>,
+      onSummaryGenerated?: (summary: any) => void,
+    ) => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Generate goodbye message
+        const goodbyePrompt =
+          "The user wants to end this conversation. Please provide a friendly goodbye message that acknowledges the conversation and thanks them for chatting. Keep it brief and warm.";
+
+        const goodbyeMessage = await sendMessageWithPersonality(
+          [{ role: "user", content: goodbyePrompt }],
+          "helper",
+          "gemma3:4b",
+        );
+
+        // Add goodbye message to chat
+        addAIMessage(goodbyeMessage as string, "helper");
+
+        // Generate and save summary
+        const { generateChatSummary, createChatSummary, saveChatSummary } = await import("../../utils/chatSummary");
+
+        const summary = await generateChatSummary(state.messages, sendMessageWithPersonality);
+        const chatSummary = createChatSummary(state.messages, summary);
+
+        await saveChatSummary(chatSummary);
+
+        // Encrypt and save to Sapphire (double encryption: AES-GCM + Sapphire)
+        try {
+          const envelope = await encrypt(JSON.stringify(chatSummary));
+          const title = `Chat Summary ${chatSummary.id}`;
+          await writeSummaryAsync({ functionName: "saveSummary", args: [chatSummary.id, envelope, title] });
+        } catch (chainErr) {
+          // Non-fatal: still saved locally/file. Log chain error.
+          console.error("Failed to save summary on Sapphire:", chainErr);
+        }
+
+        // Call the callback if provided
+        if (onSummaryGenerated) {
+          onSummaryGenerated(chatSummary);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to end chat");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [state.messages, addAIMessage, setLoading, setError],
+  );
+
   return {
     messages: state.messages,
     isLoading: state.isLoading,
@@ -75,5 +139,6 @@ export const useChat = () => {
     setLoading,
     setError,
     clearMessages,
+    endChat,
   };
 };

@@ -52,6 +52,11 @@ export const useOllama = () => {
 
   const testConnection = useCallback(async () => {
     try {
+      // Only test connection on client side
+      if (typeof window === "undefined") {
+        return false;
+      }
+
       const response = await fetch("http://localhost:11434/api/tags");
       return response.ok;
     } catch (error) {
