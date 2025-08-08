@@ -3458,6 +3458,7 @@ __metadata:
     "@nomicfoundation/hardhat-ethers": ~3.0.8
     "@nomicfoundation/hardhat-network-helpers": ~1.0.11
     "@nomicfoundation/hardhat-verify": ~2.0.10
+    "@oasisprotocol/sapphire-hardhat": ^2.22.2
     "@openzeppelin/contracts": ^5.4.0
     "@typechain/ethers-v5": ~11.1.2
     "@typechain/ethers-v6": ~0.5.1
@@ -14725,7 +14726,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "se-2@workspace:."
   dependencies:
-    "@oasisprotocol/sapphire-hardhat": ^2.22.2
     "@oasisprotocol/sapphire-paratime": ^2.2.0
     "@oasisprotocol/sapphire-viem-v2": ^2.1.0
     "@oasisprotocol/sapphire-wagmi-v2": ^2.1.0
