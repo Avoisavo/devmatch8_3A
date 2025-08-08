@@ -5,6 +5,13 @@ pragma solidity >=0.8.0 <0.9.0;
 import "hardhat/console.sol";
 
 /**
+ * Interface for ContractFactory
+ */
+interface ContractFactory {
+    function createUserContract(address user, uint256 subscriptionId) external returns (address);
+}
+
+/**
  * A smart contract that handles subscription payments in ROSE tokens
  * Users pay 1 ROSE token to subscribe to the service
  * @author BuidlGuidl
@@ -14,6 +21,7 @@ contract SubscriptionContract {
     address public immutable owner;
     uint256 public subscriptionPrice = 1 ether; // 1 ROSE token
     uint256 public totalSubscribers = 0;
+    address public contractFactory; // Contract factory address
     
     // Subscription tracking
     mapping(address => bool) public subscribers;
@@ -25,6 +33,8 @@ contract SubscriptionContract {
     event SubscriptionCancelled(address indexed subscriber, uint256 timestamp);
     event PriceUpdated(uint256 newPrice, uint256 timestamp);
     event FundsWithdrawn(address indexed owner, uint256 amount, uint256 timestamp);
+    event ContractFactoryUpdated(address indexed oldFactory, address indexed newFactory);
+    event UserContractCreated(address indexed subscriber, address indexed userContract, uint256 timestamp);
 
     // Constructor
     constructor(address _owner) {
@@ -64,6 +74,16 @@ contract SubscriptionContract {
         subscribers[msg.sender] = true;
         subscriptionTimestamp[msg.sender] = block.timestamp;
         subscriptionCount[msg.sender] += 1;
+        
+        // Create user contract if factory is set
+        if (contractFactory != address(0)) {
+            try ContractFactory(contractFactory).createUserContract(msg.sender, subscriptionCount[msg.sender]) returns (address userContract) {
+                console.log("Created user contract for:", msg.sender, "at:", userContract);
+                emit UserContractCreated(msg.sender, userContract, block.timestamp);
+            } catch {
+                console.log("Failed to create user contract for:", msg.sender);
+            }
+        }
         
         // Refund excess payment if any
         if (msg.value > subscriptionPrice) {
@@ -135,6 +155,19 @@ contract SubscriptionContract {
      */
     function getBalance() public view returns (uint256) {
         return address(this).balance;
+    }
+
+    /**
+     * Set contract factory address
+     * Only callable by owner
+     */
+    function setContractFactory(address _contractFactory) public isOwner {
+        require(_contractFactory != address(0), "Invalid factory address");
+        address oldFactory = contractFactory;
+        contractFactory = _contractFactory;
+        
+        console.log("Updated contract factory from:", oldFactory, "to:", _contractFactory);
+        emit ContractFactoryUpdated(oldFactory, _contractFactory);
     }
 
     /**
