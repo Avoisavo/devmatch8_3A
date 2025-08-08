@@ -10,12 +10,14 @@ export const ChatBox = () => {
   const { sendMessageWithPersonality, testConnection } = useOllama();
 
   useEffect(() => {
-    // Test connection on mount
-    testConnection().then((isConnected: boolean) => {
-      if (!isConnected) {
-        setError("Ollama is not running. Please start Ollama with: ollama serve");
-      }
-    });
+    // Test connection on mount (only on client side)
+    if (typeof window !== "undefined") {
+      testConnection().then((isConnected: boolean) => {
+        if (!isConnected) {
+          setError("Ollama is not running. Please start Ollama with: ollama serve");
+        }
+      });
+    }
   }, [testConnection, setError]);
 
   const handleSendMessage = async (content: string) => {

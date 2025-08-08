@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import type { ChatMessage, ChatState } from "../../types/llama";
 
-// Helper function to generate unique IDs
+// Helper function to generate unique IDs (client-side only)
 const generateUniqueId = (role: "user" | "assistant"): string => {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substr(2, 9);

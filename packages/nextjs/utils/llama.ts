@@ -20,19 +20,26 @@ export const createOllamaRequest = (
 });
 
 export const callOllamaAPI = async (request: OllamaRequest): Promise<OllamaResponse> => {
-  const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(request),
-  });
+  try {
+    const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
 
-  if (!response.ok) {
-    throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+    if (!response.ok) {
+      throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new Error("Cannot connect to Ollama. Make sure Ollama is running with: ollama serve");
+    }
+    throw error;
   }
-
-  return response.json();
 };
 
 export const streamOllamaAPI = async (request: OllamaRequest, onChunk: (chunk: string) => void): Promise<void> => {

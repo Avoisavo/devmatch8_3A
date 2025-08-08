@@ -18,6 +18,7 @@ function random(min: number, max: number): number {
 
 const SkyBackground: React.FC = () => {
   const [clouds, setClouds] = useState<Cloud[]>([]);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // Only runs on the client
@@ -30,6 +31,7 @@ const SkyBackground: React.FC = () => {
       delay: random(0, 10),
     }));
     setClouds(generatedClouds);
+    setMounted(true);
   }, []);
 
   return (
@@ -46,38 +48,41 @@ const SkyBackground: React.FC = () => {
         overflow: "hidden",
       }}
     >
-      {clouds.map(cloud => (
-        <svg
-          key={cloud.id}
-          width={180 * cloud.scale}
-          height={80 * cloud.scale}
-          viewBox="0 0 180 80"
-          style={{
-            position: "absolute",
-            top: cloud.top,
-            left: "-200px",
-            opacity: cloud.opacity,
-            transform: `scale(${cloud.scale})`,
-            animation: `cloud-move-${cloud.id} ${cloud.duration}s linear ${cloud.delay}s infinite`,
-          }}
-        >
-          <ellipse cx="60" cy="40" rx="50" ry="25" fill="#fff" />
-          <ellipse cx="110" cy="35" rx="30" ry="20" fill="#fff" />
-          <ellipse cx="140" cy="50" rx="20" ry="15" fill="#fff" />
-        </svg>
-      ))}
-      <style>{`
-        ${clouds
-          .map(
-            cloud => `
-          @keyframes cloud-move-${cloud.id} {
-            0% { left: -200px; }
-            100% { left: 110vw; }
-          }
-        `,
-          )
-          .join("\n")}
-      `}</style>
+      {mounted &&
+        clouds.map(cloud => (
+          <svg
+            key={cloud.id}
+            width={180 * cloud.scale}
+            height={80 * cloud.scale}
+            viewBox="0 0 180 80"
+            style={{
+              position: "absolute",
+              top: cloud.top,
+              left: "-200px",
+              opacity: cloud.opacity,
+              transform: `scale(${cloud.scale})`,
+              animation: `cloud-move-${cloud.id} ${cloud.duration}s linear ${cloud.delay}s infinite`,
+            }}
+          >
+            <ellipse cx="60" cy="40" rx="50" ry="25" fill="#fff" />
+            <ellipse cx="110" cy="35" rx="30" ry="20" fill="#fff" />
+            <ellipse cx="140" cy="50" rx="20" ry="15" fill="#fff" />
+          </svg>
+        ))}
+      {mounted && (
+        <style>{`
+          ${clouds
+            .map(
+              cloud => `
+            @keyframes cloud-move-${cloud.id} {
+              0% { left: -200px; }
+              100% { left: 110vw; }
+            }
+          `,
+            )
+            .join("\n")}
+        `}</style>
+      )}
     </div>
   );
 };
