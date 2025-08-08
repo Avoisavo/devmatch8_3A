@@ -1,5 +1,7 @@
 import { useCallback, useState } from "react";
+import { useSummaryCrypto } from "../../hooks/useSummaryCrypto";
 import type { ChatMessage, ChatState } from "../../types/llama";
+import { useScaffoldWriteContract } from "../scaffold-eth";
 
 // Helper function to generate unique IDs (client-side only)
 const generateUniqueId = (role: "user" | "assistant"): string => {
@@ -15,6 +17,10 @@ export const useChat = () => {
     isLoading: false,
     error: null,
   });
+  // Second-layer encryption (wallet-signature derived key)
+  const { encrypt } = useSummaryCrypto();
+  // Writer for Sapphire SummaryVault
+  const { writeContractAsync: writeSummaryAsync } = useScaffoldWriteContract({ contractName: "SummaryVault" });
 
   const addMessage = useCallback((message: Omit<ChatMessage, "id" | "timestamp">) => {
     const newMessage: ChatMessage = {
@@ -99,6 +105,16 @@ export const useChat = () => {
         const chatSummary = createChatSummary(state.messages, summary);
 
         await saveChatSummary(chatSummary);
+
+        // Encrypt and save to Sapphire (double encryption: AES-GCM + Sapphire)
+        try {
+          const envelope = await encrypt(JSON.stringify(chatSummary));
+          const title = `Chat Summary ${chatSummary.id}`;
+          await writeSummaryAsync({ functionName: "saveSummary", args: [chatSummary.id, envelope, title] });
+        } catch (chainErr) {
+          // Non-fatal: still saved locally/file. Log chain error.
+          console.error("Failed to save summary on Sapphire:", chainErr);
+        }
 
         // Call the callback if provided
         if (onSummaryGenerated) {
