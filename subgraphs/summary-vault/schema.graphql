@@ -1,0 +1,7 @@
+type Summary @entity {
+  id: ID!
+  user: Bytes!
+  summaryId: String!
+  title: String!
+  timestamp: BigInt!
+} 
