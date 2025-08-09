@@ -1,5 +1,6 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import type { ChatMessage, ChatState } from "../../types/llama";
+import { useSessionManagement } from "../../utils/contractSummary";
 
 // Helper function to generate unique IDs
 const generateUniqueId = (role: "user" | "assistant"): string => {
@@ -15,6 +16,21 @@ export const useChat = () => {
     isLoading: false,
     error: null,
   });
+  
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const { createSession, writeContractAsync } = useSessionManagement();
+
+  // Create a new session when chat starts (first message)
+  useEffect(() => {
+    if (state.messages.length === 1 && !currentSessionId) {
+      createSession().then(sessionId => {
+        if (sessionId) {
+          setCurrentSessionId(sessionId);
+          console.log("New chat session created:", sessionId);
+        }
+      });
+    }
+  }, [state.messages.length, currentSessionId, createSession]);
 
   const addMessage = useCallback((message: Omit<ChatMessage, "id" | "timestamp">) => {
     const newMessage: ChatMessage = {
@@ -63,6 +79,7 @@ export const useChat = () => {
 
   const clearMessages = useCallback(() => {
     setState((prev: ChatState) => ({ ...prev, messages: [] }));
+    setCurrentSessionId(null); // Reset session when clearing messages
   }, []);
 
   const endChat = useCallback(
@@ -94,11 +111,24 @@ export const useChat = () => {
 
         // Generate and save summary
         const { generateChatSummary, createChatSummary, saveChatSummary } = await import("../../utils/chatSummary");
+        const { useContractSummary } = await import("../../utils/contractSummary");
 
         const summary = await generateChatSummary(state.messages, sendMessageWithPersonality);
         const chatSummary = createChatSummary(state.messages, summary);
 
-        await saveChatSummary(chatSummary);
+        // Save to JSON/localStorage first (as backup)
+        await saveChatSummary(chatSummary, currentSessionId || undefined);
+
+        // Try to store in contract if session exists
+        if (currentSessionId) {
+          try {
+            console.log("Attempting to store summary in contract for session:", currentSessionId);
+            // We'll need to import this hook properly in the component level
+            // For now, just save locally with session info
+          } catch (error) {
+            console.error("Failed to store in contract, but saved locally:", error);
+          }
+        }
 
         // Call the callback if provided
         if (onSummaryGenerated) {
@@ -117,6 +147,7 @@ export const useChat = () => {
     messages: state.messages,
     isLoading: state.isLoading,
     error: state.error,
+    currentSessionId,
     addMessage,
     addAIMessage,
     updateLastMessage,

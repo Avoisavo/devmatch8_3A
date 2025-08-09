@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { parseEther } from "viem";
 import { hardhat } from "viem/chains";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
-import { Bars3Icon, BugAntIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BugAntIcon, DocumentTextIcon, KeyIcon } from "@heroicons/react/24/outline";
 import { FaucetButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -30,8 +30,18 @@ export const menuLinks: HeaderMenuLink[] = [
     icon: <BugAntIcon className="h-4 w-4" />,
   },
   {
+    label: "SIWE Test",
+    href: "/siwe-test",
+    icon: <KeyIcon className="h-4 w-4" />,
+  },
+  {
     label: "Chat Summaries",
     href: "/chat-summaries",
+    icon: <DocumentTextIcon className="h-4 w-4" />,
+  },
+  {
+    label: "Contract Summaries",
+    href: "/contract-summaries",
     icon: <DocumentTextIcon className="h-4 w-4" />,
   },
 ];
