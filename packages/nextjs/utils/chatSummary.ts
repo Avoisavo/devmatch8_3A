@@ -42,7 +42,7 @@ export const generateChatSummary = async (
 export const saveChatSummary = async (
   summary: ChatSummary, 
   sessionId?: string,
-  saveToContract: boolean = true
+  _saveToContract: boolean = true
 ): Promise<void> => {
   try {
     // Save to localStorage for persistence

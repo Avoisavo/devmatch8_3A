@@ -18,7 +18,7 @@ export const useChat = () => {
   });
   
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const { createSession, writeContractAsync } = useSessionManagement();
+  const { createSession } = useSessionManagement();
 
   // Create a new session when chat starts (first message)
   useEffect(() => {
@@ -111,7 +111,6 @@ export const useChat = () => {
 
         // Generate and save summary
         const { generateChatSummary, createChatSummary, saveChatSummary } = await import("../../utils/chatSummary");
-        const { useContractSummary } = await import("../../utils/contractSummary");
 
         const summary = await generateChatSummary(state.messages, sendMessageWithPersonality);
         const chatSummary = createChatSummary(state.messages, summary);
@@ -140,7 +139,7 @@ export const useChat = () => {
         setLoading(false);
       }
     },
-    [state.messages, addAIMessage, setLoading, setError],
+    [state.messages, addAIMessage, setLoading, setError, currentSessionId],
   );
 
   return {

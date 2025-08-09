@@ -1,6 +1,6 @@
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import type { ChatSummary } from "./chatSummary";
+// import type { ChatSummary } from "./chatSummary";
 
 // Simple encryption utility (for demo - in production use proper encryption)
 export const encryptSummary = (summary: string): string => {

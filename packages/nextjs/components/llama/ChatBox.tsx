@@ -11,7 +11,7 @@ export const ChatBox = () => {
   const { messages, isLoading, addMessage, addAIMessage, updateLastMessage, setLoading, setError, endChat, currentSessionId } = useChat();
   const { sendMessageWithPersonality, testConnection } = useOllama();
   const { address } = useAccount();
-  const { userContractAddress, storeSummaryInContract } = useContractSummary();
+  const { userContractAddress } = useContractSummary();
   const [showEndChatButton, setShowEndChatButton] = useState(false);
   const [contractStoreEnabled, setContractStoreEnabled] = useState(true);
 
@@ -84,7 +84,6 @@ export const ChatBox = () => {
         // Try to store in contract if enabled and user has contract
         if (contractStoreEnabled && currentSessionId && userContractAddress && address) {
           try {
-            const { useScaffoldWriteContract } = await import("../../hooks/scaffold-eth");
             // Note: This is a simplified approach. In practice, you'd want to handle this properly
             console.log("Would store in contract:", {
               sessionId: currentSessionId,
