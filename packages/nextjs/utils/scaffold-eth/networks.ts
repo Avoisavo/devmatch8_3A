@@ -106,25 +106,27 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
  * Gives the block explorer transaction URL, returns empty string if the network is a local chain
  */
 export function getBlockExplorerTxLink(chainId: number, txnHash: string) {
+  // First try viem/chains
   const chainNames = Object.keys(chains);
-
   const targetChainArr = chainNames.filter(chainName => {
     const wagmiChain = chains[chainName as keyof typeof chains];
     return wagmiChain.id === chainId;
   });
 
-  if (targetChainArr.length === 0) {
-    return "";
+  let blockExplorerBaseURL: string | undefined;
+  if (targetChainArr.length > 0) {
+    const targetChain = targetChainArr[0] as keyof typeof chains;
+    blockExplorerBaseURL = chains[targetChain]?.blockExplorers?.default?.url;
   }
 
-  const targetChain = targetChainArr[0] as keyof typeof chains;
-  const blockExplorerTxURL = chains[targetChain]?.blockExplorers?.default?.url;
-
-  if (!blockExplorerTxURL) {
-    return "";
+  // If viem doesn't know about this chain (e.g., custom Sapphire), check scaffold.config targetNetworks
+  if (!blockExplorerBaseURL) {
+    const custom = scaffoldConfig.targetNetworks.find(n => n.id === chainId);
+    blockExplorerBaseURL = custom?.blockExplorers?.default?.url as string | undefined;
   }
 
-  return `${blockExplorerTxURL}/tx/${txnHash}`;
+  if (!blockExplorerBaseURL) return "";
+  return `${blockExplorerBaseURL}/tx/${txnHash}`;
 }
 
 /**

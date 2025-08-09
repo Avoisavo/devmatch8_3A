@@ -11,10 +11,30 @@ export const metadata = getMetadata({
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <html suppressHydrationWarning className={``}>
-      <body>
-        <ThemeProvider enableSystem>
-          <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
-        </ThemeProvider>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Suppress hydration warnings in development
+              if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+                const originalError = console.error;
+                console.error = (...args) => {
+                  if (args[0]?.includes?.('Hydration failed') || args[0]?.includes?.('hydration')) {
+                    return;
+                  }
+                  originalError.apply(console, args);
+                };
+              }
+            `,
+          }}
+        />
+      </head>
+      <body suppressHydrationWarning>
+        <div suppressHydrationWarning>
+          <ThemeProvider enableSystem>
+            <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
+          </ThemeProvider>
+        </div>
       </body>
     </html>
   );

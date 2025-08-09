@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { ChatMessage } from "../../types/llama";
 import { getAIPersonality } from "../../utils/aiPersonalities";
 
@@ -6,6 +7,12 @@ interface MessageListProps {
 }
 
 export const MessageList = ({ messages }: MessageListProps) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   if (messages.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-base-content/60">
@@ -32,7 +39,11 @@ export const MessageList = ({ messages }: MessageListProps) => {
             )}
             <p className="whitespace-pre-wrap break-words">{message.content}</p>
             <div className="flex justify-between items-center mt-1">
-              <p className="text-xs opacity-70">{message.timestamp.toLocaleTimeString()}</p>
+              <p className="text-xs opacity-70">
+                {mounted
+                  ? message.timestamp.toLocaleTimeString()
+                  : message.timestamp.toISOString().split("T")[1].slice(0, 8)}
+              </p>
               <p className="text-xs opacity-50 font-mono">ID: {message.id}</p>
             </div>
           </div>

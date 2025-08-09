@@ -2,7 +2,7 @@ import { useCallback, useState, useEffect } from "react";
 import type { ChatMessage, ChatState } from "../../types/llama";
 import { useSessionManagement } from "../../utils/contractSummary";
 
-// Helper function to generate unique IDs
+// Helper function to generate unique IDs (client-side only)
 const generateUniqueId = (role: "user" | "assistant"): string => {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substr(2, 9);
@@ -128,6 +128,9 @@ export const useChat = () => {
             console.error("Failed to store in contract, but saved locally:", error);
           }
         }
+
+        // TODO: Implement Sapphire contract integration for summary storage
+        console.log("Chat summary saved locally:", chatSummary.id);
 
         // Call the callback if provided
         if (onSummaryGenerated) {

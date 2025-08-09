@@ -1,0 +1,157 @@
+{
+  "address": "0x2FD12dbBCeD15a3CFB6401357288D6dDBC811aBE",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "SummarySaved",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "id",
+          "type": "string"
+        }
+      ],
+      "name": "getSummary",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "content",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "title",
+          "type": "string"
+        }
+      ],
+      "name": "saveSummary",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x7e79731cec05981be06d9603891fcdc91ac654b5c6dab7c323fdd3d582b09953",
+  "receipt": {
+    "to": null,
+    "from": "0x0020cE4969A6Ec50885E083784A495483Db7A62c",
+    "contractAddress": "0x2FD12dbBCeD15a3CFB6401357288D6dDBC811aBE",
+    "transactionIndex": 0,
+    "gasUsed": "341106",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xa7a3d4a002835bb90881058099427c35be68d21dde7e3a332989f338a79ed5ea",
+    "transactionHash": "0x7e79731cec05981be06d9603891fcdc91ac654b5c6dab7c323fdd3d582b09953",
+    "logs": [],
+    "blockNumber": 12930146,
+    "cumulativeGasUsed": "341106",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "0ca38ee668deff64367d07acd2026638",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"title\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"SummarySaved\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"}],\"name\":\"getSummary\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"content\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"title\",\"type\":\"string\"}],\"name\":\"saveSummary\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"saveSummary(string,string,string)\":{\"params\":{\"content\":\"Full summary content (JSON string or free text)\",\"id\":\"Client-defined identifier (e.g., \\\"summary_2025_08_08_05_59\\\")\",\"title\":\"Short title for indexing/display\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"getSummary(string)\":{\"notice\":\"Retrieve a previously saved summary by ID\"},\"saveSummary(string,string,string)\":{\"notice\":\"Save or update a summary\"}},\"notice\":\"SummaryVault - Stores chat summaries keyed by an ID - Emits a public event with indexable metadata for The Graph Note: The Oasis Sapphire runtime provides confidentiality for calldata/state when transacting on Sapphire networks using Sapphire-aware clients.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/SummaryVault.sol\":\"SummaryVault\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/SummaryVault.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\r\\npragma solidity ^0.8.20;\\r\\n\\r\\n/**\\r\\n * SummaryVault\\r\\n * - Stores chat summaries keyed by an ID\\r\\n * - Emits a public event with indexable metadata for The Graph\\r\\n * Note: The Oasis Sapphire runtime provides confidentiality for calldata/state\\r\\n * when transacting on Sapphire networks using Sapphire-aware clients.\\r\\n */\\r\\ncontract SummaryVault {\\r\\n    event SummarySaved(address indexed user, string id, string title, uint256 timestamp);\\r\\n\\r\\n    // Mapping from summary ID to summary content\\r\\n    mapping(string => string) private idToSummary;\\r\\n\\r\\n    /**\\r\\n     * Save or update a summary\\r\\n     * @param id     Client-defined identifier (e.g., \\\"summary_2025_08_08_05_59\\\")\\r\\n     * @param content Full summary content (JSON string or free text)\\r\\n     * @param title  Short title for indexing/display\\r\\n     */\\r\\n    function saveSummary(string calldata id, string calldata content, string calldata title) external {\\r\\n        idToSummary[id] = content;\\r\\n        emit SummarySaved(msg.sender, id, title, block.timestamp);\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * Retrieve a previously saved summary by ID\\r\\n     */\\r\\n    function getSummary(string calldata id) external view returns (string memory) {\\r\\n        return idToSummary[id];\\r\\n    }\\r\\n}\\r\\n\\r\\n\\r\\n\",\"keccak256\":\"0xbce8097056287ecb87d307f536baff99912574da319f7e11d7a9893d69b0ac74\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50610529806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80630aa1f4af1461003b578063e9d04b3314610064575b600080fd5b61004e6100493660046101f6565b610079565b60405161005b9190610238565b60405180910390f35b610077610072366004610286565b61012c565b005b60606000838360405161008d929190610320565b908152602001604051809103902080546100a690610330565b80601f01602080910402602001604051908101604052809291908181526020018280546100d290610330565b801561011f5780601f106100f45761010080835404028352916020019161011f565b820191906000526020600020905b81548152906001019060200180831161010257829003601f168201915b5050505050905092915050565b838360008888604051610140929190610320565b9081526020016040518091039020918261015b9291906103cf565b50336001600160a01b03167f97c4f5d29139ba1d0a40d86e9b8276426149996b06aa4aff1d7e21b866834c17878785854260405161019d9594939291906104b9565b60405180910390a2505050505050565b60008083601f8401126101bf57600080fd5b50813567ffffffffffffffff8111156101d757600080fd5b6020830191508360208285010111156101ef57600080fd5b9250929050565b6000806020838503121561020957600080fd5b823567ffffffffffffffff81111561022057600080fd5b61022c858286016101ad565b90969095509350505050565b600060208083528351808285015260005b8181101561026557858101830151858201604001528201610249565b506000604082860101526040601f19601f8301168501019250505092915050565b6000806000806000806060878903121561029f57600080fd5b863567ffffffffffffffff808211156102b757600080fd5b6102c38a838b016101ad565b909850965060208901359150808211156102dc57600080fd5b6102e88a838b016101ad565b9096509450604089013591508082111561030157600080fd5b5061030e89828a016101ad565b979a9699509497509295939492505050565b8183823760009101908152919050565b600181811c9082168061034457607f821691505b60208210810361036457634e487b7160e01b600052602260045260246000fd5b50919050565b634e487b7160e01b600052604160045260246000fd5b601f8211156103ca57600081815260208120601f850160051c810160208610156103a75750805b601f850160051c820191505b818110156103c6578281556001016103b3565b5050505b505050565b67ffffffffffffffff8311156103e7576103e761036a565b6103fb836103f58354610330565b83610380565b6000601f84116001811461042f57600085156104175750838201355b600019600387901b1c1916600186901b178355610489565b600083815260209020601f19861690835b828110156104605786850135825560209485019460019092019101610440565b508682101561047d5760001960f88860031b161c19848701351681555b505060018560011b0183555b5050505050565b81835281816020850137506000828201602090810191909152601f909101601f19169091010190565b6060815260006104cd606083018789610490565b82810360208401526104e0818688610490565b915050826040830152969550505050505056fea2646970667358221220f1b6a2edfd2280b1d9baf32179f75b93fd51ac4e64f9ce0236b503acb3d2db6c64736f6c63430008140033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c80630aa1f4af1461003b578063e9d04b3314610064575b600080fd5b61004e6100493660046101f6565b610079565b60405161005b9190610238565b60405180910390f35b610077610072366004610286565b61012c565b005b60606000838360405161008d929190610320565b908152602001604051809103902080546100a690610330565b80601f01602080910402602001604051908101604052809291908181526020018280546100d290610330565b801561011f5780601f106100f45761010080835404028352916020019161011f565b820191906000526020600020905b81548152906001019060200180831161010257829003601f168201915b5050505050905092915050565b838360008888604051610140929190610320565b9081526020016040518091039020918261015b9291906103cf565b50336001600160a01b03167f97c4f5d29139ba1d0a40d86e9b8276426149996b06aa4aff1d7e21b866834c17878785854260405161019d9594939291906104b9565b60405180910390a2505050505050565b60008083601f8401126101bf57600080fd5b50813567ffffffffffffffff8111156101d757600080fd5b6020830191508360208285010111156101ef57600080fd5b9250929050565b6000806020838503121561020957600080fd5b823567ffffffffffffffff81111561022057600080fd5b61022c858286016101ad565b90969095509350505050565b600060208083528351808285015260005b8181101561026557858101830151858201604001528201610249565b506000604082860101526040601f19601f8301168501019250505092915050565b6000806000806000806060878903121561029f57600080fd5b863567ffffffffffffffff808211156102b757600080fd5b6102c38a838b016101ad565b909850965060208901359150808211156102dc57600080fd5b6102e88a838b016101ad565b9096509450604089013591508082111561030157600080fd5b5061030e89828a016101ad565b979a9699509497509295939492505050565b8183823760009101908152919050565b600181811c9082168061034457607f821691505b60208210810361036457634e487b7160e01b600052602260045260246000fd5b50919050565b634e487b7160e01b600052604160045260246000fd5b601f8211156103ca57600081815260208120601f850160051c810160208610156103a75750805b601f850160051c820191505b818110156103c6578281556001016103b3565b5050505b505050565b67ffffffffffffffff8311156103e7576103e761036a565b6103fb836103f58354610330565b83610380565b6000601f84116001811461042f57600085156104175750838201355b600019600387901b1c1916600186901b178355610489565b600083815260209020601f19861690835b828110156104605786850135825560209485019460019092019101610440565b508682101561047d5760001960f88860031b161c19848701351681555b505060018560011b0183555b5050505050565b81835281816020850137506000828201602090810191909152601f909101601f19169091010190565b6060815260006104cd606083018789610490565b82810360208401526104e0818688610490565b915050826040830152969550505050505056fea2646970667358221220f1b6a2edfd2280b1d9baf32179f75b93fd51ac4e64f9ce0236b503acb3d2db6c64736f6c63430008140033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "saveSummary(string,string,string)": {
+        "params": {
+          "content": "Full summary content (JSON string or free text)",
+          "id": "Client-defined identifier (e.g., \"summary_2025_08_08_05_59\")",
+          "title": "Short title for indexing/display"
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "getSummary(string)": {
+        "notice": "Retrieve a previously saved summary by ID"
+      },
+      "saveSummary(string,string,string)": {
+        "notice": "Save or update a summary"
+      }
+    },
+    "notice": "SummaryVault - Stores chat summaries keyed by an ID - Emits a public event with indexable metadata for The Graph Note: The Oasis Sapphire runtime provides confidentiality for calldata/state when transacting on Sapphire networks using Sapphire-aware clients.",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 372,
+        "contract": "contracts/SummaryVault.sol:SummaryVault",
+        "label": "idToSummary",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_string_memory_ptr,t_string_storage)"
+      }
+    ],
+    "types": {
+      "t_mapping(t_string_memory_ptr,t_string_storage)": {
+        "encoding": "mapping",
+        "key": "t_string_memory_ptr",
+        "label": "mapping(string => string)",
+        "numberOfBytes": "32",
+        "value": "t_string_storage"
+      },
+      "t_string_memory_ptr": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      },
+      "t_string_storage": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

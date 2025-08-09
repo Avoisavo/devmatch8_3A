@@ -2,10 +2,11 @@ import { useCallback } from "react";
 import type { OllamaMessage } from "../../types/llama";
 import { getPersonalityPrompt } from "../../utils/aiPersonalities";
 import { callOllamaAPI, createOllamaRequest, streamOllamaAPI } from "../../utils/llama";
+import { DEFAULT_MODEL, OLLAMA_BASE_URL } from "../../utils/llama";
 
 export const useOllama = () => {
   const sendMessage = useCallback(
-    async (messages: OllamaMessage[], model: string = "gemma3:4b", onStream?: (chunk: string) => void) => {
+    async (messages: OllamaMessage[], model: string = DEFAULT_MODEL, onStream?: (chunk: string) => void) => {
       try {
         const request = createOllamaRequest(messages, model, !!onStream);
 
@@ -27,7 +28,7 @@ export const useOllama = () => {
     async (
       messages: OllamaMessage[],
       personality: "helper" | "thinker" | "curious",
-      model: string = "gemma3:4b",
+      model: string = DEFAULT_MODEL,
       onStream?: (chunk: string) => void,
     ) => {
       try {
@@ -52,7 +53,11 @@ export const useOllama = () => {
 
   const testConnection = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:11434/api/tags");
+      if (typeof window === "undefined") {
+        return false;
+      }
+
+      const response = await fetch(`${OLLAMA_BASE_URL}/api/tags`);
       return response.ok;
     } catch (error) {
       console.error("Ollama connection test failed:", error);

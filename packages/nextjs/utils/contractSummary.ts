@@ -18,14 +18,26 @@ export const decryptSummary = (encryptedData: string): string => {
   }
 };
 
-// Convert string to bytes for contract storage
+// Convert string to bytes for contract storage (browser-safe)
 export const stringToBytes = (str: string): `0x${string}` => {
-  return `0x${Buffer.from(str, "utf8").toString("hex")}`;
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(str);
+  let hex = "";
+  for (let i = 0; i < bytes.length; i++) {
+    hex += bytes[i].toString(16).padStart(2, "0");
+  }
+  return `0x${hex}`;
 };
 
-// Convert bytes from contract to string
+// Convert bytes from contract to string (browser-safe)
 export const bytesToString = (bytes: `0x${string}`): string => {
-  return Buffer.from(bytes.slice(2), "hex").toString("utf8");
+  const hex = bytes.startsWith("0x") ? bytes.slice(2) : bytes;
+  const len = hex.length / 2;
+  const arr = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    arr[i] = parseInt(hex.substr(i * 2, 2), 16);
+  }
+  return new TextDecoder().decode(arr);
 };
 
 // Hook for contract-based summary operations

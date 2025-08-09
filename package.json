@@ -50,18 +50,12 @@
     "verify": "yarn hardhat:verify"
   },
   "devDependencies": {
+    "hardhat": "~2.22.10",
     "husky": "~9.1.6",
     "lint-staged": "~13.2.2"
   },
   "packageManager": "yarn@3.2.3",
   "engines": {
     "node": ">=20.18.3"
-  },
-  "dependencies": {
-    "@oasisprotocol/sapphire-paratime": "^2.2.0",
-    "@oasisprotocol/sapphire-viem-v2": "^2.1.0",
-    "@oasisprotocol/sapphire-wagmi-v2": "^2.1.0",
-    "viem": "2.x",
-    "wagmi": "2.x"
   }
 }

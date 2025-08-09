@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ClientOnly } from "./ClientOnly";
 import { parseEther } from "viem";
 import { hardhat } from "viem/chains";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
@@ -78,6 +79,11 @@ export const Header = () => {
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
   const [isLoading, setIsLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const burgerMenuRef = useRef<HTMLDetailsElement>(null);
   useOutsideClick(burgerMenuRef, () => {
@@ -134,71 +140,95 @@ export const Header = () => {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 navbar bg-base-100 min-h-0 shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
-      <div className="navbar-start w-auto lg:w-1/2">
-        <details className="dropdown" ref={burgerMenuRef}>
-          <summary className="ml-1 btn btn-ghost lg:hidden hover:bg-transparent">
-            <Bars3Icon className="h-1/2" />
-          </summary>
-          <ul
-            className="menu menu-compact dropdown-content mt-3 p-2 shadow-sm bg-base-100 rounded-box w-52"
-            onClick={() => {
-              burgerMenuRef?.current?.removeAttribute("open");
-            }}
-          >
+    <ClientOnly
+      fallback={
+        <div className="fixed top-0 left-0 right-0 navbar bg-base-100 min-h-0 shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
+          <div className="navbar-start w-auto lg:w-1/2">
+            <div className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
+              <div className="flex relative w-10 h-10"></div>
+              <div className="flex flex-col">
+                <span className="font-bold leading-tight">Scaffold-ETH</span>
+                <span className="text-xs">Ethereum dev stack</span>
+              </div>
+            </div>
+          </div>
+          <div className="navbar-end grow mr-4 flex items-center gap-2">
+            <button className="btn btn-primary btn-sm" disabled>
+              Subscribe (1 ROSE)
+            </button>
+            <button className="btn btn-primary btn-sm" disabled>
+              Connect Wallet
+            </button>
+          </div>
+        </div>
+      }
+    >
+      <div className="fixed top-0 left-0 right-0 navbar bg-base-100 min-h-0 shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
+        <div className="navbar-start w-auto lg:w-1/2">
+          <details className="dropdown" ref={burgerMenuRef}>
+            <summary className="ml-1 btn btn-ghost lg:hidden hover:bg-transparent">
+              <Bars3Icon className="h-1/2" />
+            </summary>
+            <ul
+              className="menu menu-compact dropdown-content mt-3 p-2 shadow-sm bg-base-100 rounded-box w-52"
+              onClick={() => {
+                burgerMenuRef?.current?.removeAttribute("open");
+              }}
+            >
+              <HeaderMenuLinks />
+            </ul>
+          </details>
+          <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
+            <div className="flex relative w-10 h-10">
+              <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold leading-tight">Scaffold-ETH</span>
+              <span className="text-xs">Ethereum dev stack</span>
+            </div>
+          </Link>
+          <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
             <HeaderMenuLinks />
           </ul>
-        </details>
-        <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
-          <div className="flex relative w-10 h-10">
-            <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold leading-tight">Scaffold-ETH</span>
-            <span className="text-xs">Ethereum dev stack</span>
-          </div>
-        </Link>
-        <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
-          <HeaderMenuLinks />
-        </ul>
-      </div>
-      <div className="navbar-end grow mr-4 flex items-center gap-2">
-        <button
-          className={`btn btn-primary btn-sm ${isLoading ? "loading" : ""}`}
-          onClick={handleSubscribe}
-          disabled={isLoading || !address}
-        >
-          {isLoading
-            ? "Processing..."
-            : isSubscribed
-              ? `Subscribe Again (Active until ${subscriptionInfo ? new Date(Number(subscriptionInfo) * 1000).toLocaleDateString() : "N/A"})`
-              : "Subscribe (1 ROSE)"}
-        </button>
-
-        {/* Custom Connect Button */}
-        {address ? (
-          <div className="dropdown dropdown-end">
-            <button className="btn btn-primary btn-sm">
-              {address.slice(0, 6)}...{address.slice(-4)}
-            </button>
-            <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-              <li>
-                <button onClick={() => disconnect()}>Disconnect</button>
-              </li>
-            </ul>
-          </div>
-        ) : (
+        </div>
+        <div className="navbar-end grow mr-4 flex items-center gap-2">
           <button
-            className="btn btn-primary btn-sm"
-            onClick={() => connect({ connector: connectors[0] })}
-            disabled={isPending}
+            className={`btn btn-primary btn-sm ${isLoading ? "loading" : ""}`}
+            onClick={handleSubscribe}
+            disabled={isLoading || !address}
           >
-            {isPending ? "Connecting..." : "Connect Wallet"}
+            {isLoading
+              ? "Processing..."
+              : isSubscribed
+                ? `Subscribe Again (Active until ${subscriptionInfo ? new Date(Number(subscriptionInfo) * 1000).toLocaleDateString() : "N/A"})`
+                : "Subscribe (1 ROSE)"}
           </button>
-        )}
 
-        {isLocalNetwork && <FaucetButton />}
+          {/* Custom Connect Button */}
+          {address ? (
+            <div className="dropdown dropdown-end">
+              <button className="btn btn-primary btn-sm">
+                {address.slice(0, 6)}...{address.slice(-4)}
+              </button>
+              <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                <li>
+                  <button onClick={() => disconnect()}>Disconnect</button>
+                </li>
+              </ul>
+            </div>
+          ) : (
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => connect({ connector: connectors[0] })}
+              disabled={isPending}
+            >
+              {isPending ? "Connecting..." : "Connect Wallet"}
+            </button>
+          )}
+
+          {isLocalNetwork && <FaucetButton />}
+        </div>
       </div>
-    </div>
+    </ClientOnly>
   );
 };

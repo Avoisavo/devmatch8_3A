@@ -6,6 +6,10 @@ import { useContractSummary } from "../../utils/contractSummary";
 import { MessageInput } from "./MessageInput";
 import { MessageList } from "./MessageList";
 import { useAccount } from "wagmi";
+import { useScaffoldWriteContract, useSelectedNetwork } from "~~/hooks/scaffold-eth";
+import { useSummaryCrypto } from "../../hooks/useSummaryCrypto";
+import { stringToBytes } from "../../utils/contractSummary";
+import { notification, getBlockExplorerTxLink } from "~~/utils/scaffold-eth";
 
 export const ChatBox = () => {
   const {
@@ -22,16 +26,25 @@ export const ChatBox = () => {
   const { sendMessageWithPersonality, testConnection } = useOllama();
   const { address } = useAccount();
   const { userContractAddress } = useContractSummary();
+  const { encrypt, ensureSignature } = useSummaryCrypto();
+  const selectedNetwork = useSelectedNetwork();
+  const { writeContractAsync: writeFactoryAsync } = useScaffoldWriteContract({
+    contractName: "SubscriptionAndSummaryFactory",
+  });
   const [showEndChatButton, setShowEndChatButton] = useState(false);
   const [contractStoreEnabled, setContractStoreEnabled] = useState(true);
+  const [forceSignature, setForceSignature] = useState(false);
+  const [lastTxHash, setLastTxHash] = useState<string | null>(null);
 
   useEffect(() => {
-    // Test connection on mount
-    testConnection().then((isConnected: boolean) => {
-      if (!isConnected) {
-        setError("Ollama is not running. Please start Ollama with: ollama serve");
-      }
-    });
+    // Test connection on mount (only on client side)
+    if (typeof window !== "undefined") {
+      testConnection().then((isConnected: boolean) => {
+        if (!isConnected) {
+          setError("Ollama is not running. Please start Ollama with: ollama serve");
+        }
+      });
+    }
   }, [testConnection, setError]);
 
   // Show end chat button when there are messages
@@ -66,7 +79,7 @@ export const ChatBox = () => {
 
         // Stream the response for this personality
         let fullResponse = "";
-        await sendMessageWithPersonality(ollamaMessages, personality.id, "gemma3:4b", (chunk: string) => {
+        await sendMessageWithPersonality(ollamaMessages, personality.id, undefined, (chunk: string) => {
           fullResponse += chunk;
           updateLastMessage(fullResponse);
         });
@@ -91,17 +104,33 @@ export const ChatBox = () => {
       await endChat(sendMessageWithPersonality, async summary => {
         console.log("Chat summary generated:", summary);
 
-        // Try to store in contract if enabled and user has contract
-        if (contractStoreEnabled && currentSessionId && userContractAddress && address) {
+        // Try to store in contract via factory.addMySummary if enabled and prerequisites met
+        if (contractStoreEnabled && currentSessionId) {
           try {
-            // Note: This is a simplified approach. In practice, you'd want to handle this properly
-            console.log("Would store in contract:", {
-              sessionId: currentSessionId,
-              userContract: userContractAddress,
-              summaryPreview: summary.summary.substring(0, 100),
-            });
-            // For now, just log the attempt
-            console.log("Contract storage would be attempted here");
+            if (!address) {
+              notification.error("Connect your wallet to store the summary on-chain");
+              return;
+            }
+            // Prompt signature to derive encryption key
+            const signToastId = notification.loading("Please sign the message in your wallet to encrypt the summary...");
+            if (forceSignature) {
+              await ensureSignature(); // always force wallet signature prompt
+            }
+            const encrypted = await encrypt(summary.summary);
+            notification.remove(signToastId);
+
+            const asBytes = stringToBytes(encrypted);
+
+            // Call SubscriptionAndSummaryFactory.addMySummary(bytes)
+            const hash = (await writeFactoryAsync({
+              functionName: "addMySummary",
+              args: [asBytes],
+            })) as string;
+
+            setLastTxHash(hash);
+            console.log("addMySummary tx hash:", hash);
+            // useTransactor inside the scaffold hook shows the waiting and completion toasts with explorer link.
+
           } catch (contractError) {
             console.error("Failed to store in contract:", contractError);
             setError("Failed to store summary in contract, but saved locally");
@@ -120,7 +149,7 @@ export const ChatBox = () => {
       <div className="mb-2 text-xs text-base-content/60">
         <div className="flex justify-between items-center">
           <span>Session: {currentSessionId ? `${currentSessionId.substring(0, 8)}...` : "Not started"}</span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span>Contract: {userContractAddress ? "✓ Connected" : "⚠ Not found"}</span>
             <label className="flex items-center gap-1">
               <input
@@ -131,13 +160,40 @@ export const ChatBox = () => {
               />
               <span>Store in contract</span>
             </label>
+            <label className="flex items-center gap-1">
+              <input
+                type="checkbox"
+                checked={forceSignature}
+                onChange={e => setForceSignature(e.target.checked)}
+                className="checkbox checkbox-xs"
+              />
+              <span>Prompt signature every time</span>
+            </label>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 mb-4 overflow-y-auto min-h-0">
+      <div className="flex-1 mb-2 overflow-y-auto min-h-0">
         <MessageList messages={messages} />
       </div>
+
+      {/* Transaction banner */}
+      {lastTxHash && (
+        <div className="mb-2 text-xs p-2 rounded bg-base-200 text-base-content/80 flex items-center justify-between">
+          <span>
+            Last tx: {lastTxHash.slice(0, 10)}…
+          </span>
+          <a
+            href={getBlockExplorerTxLink(selectedNetwork.id, lastTxHash)}
+            target="_blank"
+            rel="noreferrer"
+            className="link"
+          >
+            view in explorer
+          </a>
+        </div>
+      )}
+
       <div className="flex-1">
         <MessageInput
           onSendMessage={handleSendMessage}

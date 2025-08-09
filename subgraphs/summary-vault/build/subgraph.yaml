@@ -1,0 +1,24 @@
+specVersion: 0.0.7
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum
+    name: SummaryVault
+    network: oasis
+    source:
+      address: "0x2fd12dbbced15a3cfb6401357288d6ddbc811abe"
+      abi: SummaryVault
+      startBlock: 12930146
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Summary
+      abis:
+        - name: SummaryVault
+          file: SummaryVault\abis\SummaryVault.json
+      eventHandlers:
+        - event: SummarySaved(indexed address,string,string,uint256)
+          handler: handleSummarySaved
+      file: SummaryVault\SummaryVault.wasm
