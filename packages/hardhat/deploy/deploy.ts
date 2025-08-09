@@ -3,40 +3,50 @@
 // - Calls factory.paySubscription with value; contract auto-creates UserSummaryStorage for the payer
 //
 // Usage:
-//   npx hardhat run scripts/deploy.js --network sapphireTestnet
+//   npx hardhat run scripts/deploy.ts --network sapphireTestnet
 //
 // Notes:
 // - Paste your private key if you want to use an external account; otherwise it will fallback to the first Hardhat signer.
 
-const { ethers, network } = require("hardhat");
+import hre from "hardhat";
+import type { Signer, Wallet } from "ethers";
+import type { SubscriptionAndSummaryFactory } from "../typechain-types/contracts/UserSummaryFactory.sol/SubscriptionAndSummaryFactory";
+
+const { ethers, network } = hre;
 
 // Paste your private key here (with or without 0x). Leave blank to use Hardhat's default signer.
-const PRIVATE_KEY = "288aa8133097655bd084faae22fee9724ffe078c8aa3223417abb630ed2dc757"; // <--- paste your private key here if needed
+const PRIVATE_KEY: string = "288aa8133097655bd084faae22fee9724ffe078c8aa3223417abb630ed2dc757"; // <--- paste your private key here if needed
 
 // How much ETH to send as the subscription payment (string, in ETH units)
-const PAYMENT_ETH = "0.01";
+const PAYMENT_ETH: string = "0.01";
 
-function normalizePk(pk) {
+function normalizePk(pk?: string): string | undefined {
   if (!pk) return undefined;
   return pk.startsWith("0x") ? pk : `0x${pk}`;
 }
 
-async function main() {
+async function main(): Promise<void> {
   console.log("Network:", network.name);
 
-  let deployer;
+  let deployer: Signer | Wallet;
   if (PRIVATE_KEY && PRIVATE_KEY.trim().length > 0) {
     const normalized = normalizePk(PRIVATE_KEY.trim());
+    if (!normalized) {
+      throw new Error("Invalid private key format.");
+    }
     deployer = new ethers.Wallet(normalized, ethers.provider);
   } else {
     const signers = await ethers.getSigners();
     if (!signers || signers.length === 0) {
-      throw new Error("No signers available. Paste your PRIVATE_KEY in scripts/deploy.js and try again.");
+      throw new Error("No signers available. Paste your PRIVATE_KEY in scripts/deploy.ts and try again.");
     }
     deployer = signers[0];
   }
 
-  const deployerAddress = deployer.address || (typeof deployer.getAddress === "function" ? await deployer.getAddress() : undefined);
+  const deployerAddress: string =
+    (deployer as any).address ||
+    (typeof (deployer as any).getAddress === "function" ? await (deployer as any).getAddress() : undefined);
+
   if (!deployerAddress) {
     throw new Error("Could not determine deployer address.");
   }
@@ -48,9 +58,12 @@ async function main() {
   // 1) Deploy the factory
   const Factory = await ethers.getContractFactory("SubscriptionAndSummaryFactory", deployer);
   console.log("Deploying SubscriptionAndSummaryFactory...");
-  const factory = await Factory.deploy();
+  const factory = (await Factory.deploy()) as SubscriptionAndSummaryFactory;
   await factory.waitForDeployment();
-  const factoryAddress = typeof factory.getAddress === "function" ? await factory.getAddress() : factory.target;
+
+  const factoryAddress: string =
+    typeof (factory as any).getAddress === "function" ? await (factory as any).getAddress() : (factory as any).target;
+
   console.log("SubscriptionAndSummaryFactory deployed at:", factoryAddress);
 
   // 2) Pay for subscription; the contract will auto-create the storage for the payer
@@ -60,17 +73,17 @@ async function main() {
   console.log("Subscription paid.");
 
   // 3) Read the mapped address back from the factory for the payer (deployer)
-  const storageAddress = await factory.userSummaryContract(deployerAddress);
+  const storageAddress: string = await factory.userSummaryContract(deployerAddress);
   console.log("UserSummaryStorage deployed/linked at:", storageAddress);
 
   // Optional: check active status
-  const active = await factory.isActive(deployerAddress);
+  const active: boolean = await factory.isActive(deployerAddress);
   console.log("Subscription active:", active);
 
   console.log("Deployment complete.\n- Factory:", factoryAddress, "\n- UserSummaryStorage:", storageAddress);
 }
 
-main().catch((error) => {
+main().catch((error: Error) => {
   console.error(error);
   process.exitCode = 1;
 });
