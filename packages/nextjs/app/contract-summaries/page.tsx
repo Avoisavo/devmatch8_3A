@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useContractSummary } from "../../utils/contractSummary";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
-import { useContractSummary } from "../../utils/contractSummary";
 
 interface ContractSummary {
   sessionId: string;
@@ -21,56 +21,54 @@ export default function ContractSummariesPage() {
 
   const { userContractAddress } = useContractSummary();
 
-  // Get all session IDs for the user
-  const { data: sessionIds, refetch: refetchSessions } = useScaffoldReadContract({
-    contractName: "UserContract",
-    functionName: "getAllSessionIds",
-    args: [],
-    address: userContractAddress,
+  // Get summaries count from the user summary contract
+  const { data: summariesCount, refetch: refetchSessions } = useScaffoldReadContract({
+    contractName: "UserSummaryStorage",
+    functionName: "summariesCount",
   });
 
   // Load summaries from contract
-  const loadContractSummaries = async () => {
-    if (!sessionIds || sessionIds.length === 0 || !userContractAddress) {
+  const loadContractSummaries = useCallback(async () => {
+    if (!summariesCount || summariesCount === 0n || !userContractAddress) {
       return;
     }
 
     setLoading(true);
     setError(null);
-    
+
     try {
       const summariesData: ContractSummary[] = [];
-      
-      // For each session, try to get its summary
-      for (const sessionId of sessionIds) {
+
+      // For each summary index, try to get its data
+      for (let i = 0; i < Number(summariesCount); i++) {
         try {
           // This would require implementing a read function in the contract
           // For now, we'll show placeholder data
           summariesData.push({
-            sessionId: sessionId,
+            sessionId: `session_${i}`,
             encryptedSummary: "encrypted_data_placeholder",
             createdAt: Date.now(),
             messageCount: 0,
-            decryptedSummary: "This would be a decrypted summary from the contract"
+            decryptedSummary: "This would be a decrypted summary from the contract",
           });
         } catch (err) {
-          console.error(`Failed to load summary for session ${sessionId}:`, err);
+          console.error(`Failed to load summary for index ${i}:`, err);
         }
       }
-      
+
       setSummaries(summariesData);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load summaries");
     } finally {
       setLoading(false);
     }
-  };
+  }, [summariesCount, userContractAddress]);
 
   useEffect(() => {
-    if (userContractAddress && sessionIds) {
+    if (userContractAddress && summariesCount) {
       loadContractSummaries();
     }
-  }, [userContractAddress, sessionIds]);
+  }, [userContractAddress, summariesCount, loadContractSummaries]);
 
   if (!isConnected) {
     return (
@@ -96,10 +94,7 @@ export default function ContractSummariesPage() {
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Contract Stored Summaries</h1>
-        <button 
-          onClick={() => refetchSessions()}
-          className="btn btn-secondary btn-sm"
-        >
+        <button onClick={() => refetchSessions()} className="btn btn-secondary btn-sm">
           Refresh
         </button>
       </div>
@@ -113,8 +108,8 @@ export default function ContractSummariesPage() {
             <span className="ml-2 font-mono text-xs break-all">{userContractAddress}</span>
           </div>
           <div>
-            <span className="font-medium">Total Sessions:</span>
-            <span className="ml-2">{sessionIds?.length || 0}</span>
+            <span className="font-medium">Total Summaries:</span>
+            <span className="ml-2">{summariesCount ? Number(summariesCount) : 0}</span>
           </div>
         </div>
       </div>
@@ -151,14 +146,10 @@ export default function ContractSummariesPage() {
             <div key={summary.sessionId} className="card bg-base-100 shadow-lg">
               <div className="card-body">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="card-title text-lg">
-                    Session #{index + 1}
-                  </h3>
-                  <div className="text-xs text-base-content/60">
-                    {new Date(summary.createdAt).toLocaleString()}
-                  </div>
+                  <h3 className="card-title text-lg">Session #{index + 1}</h3>
+                  <div className="text-xs text-base-content/60">{new Date(summary.createdAt).toLocaleString()}</div>
                 </div>
-                
+
                 <div className="text-sm text-base-content/70 mb-3">
                   <span className="font-mono bg-base-200 px-2 py-1 rounded">
                     {summary.sessionId.substring(0, 16)}...
@@ -185,8 +176,8 @@ export default function ContractSummariesPage() {
       {/* Help Text */}
       <div className="mt-8 text-center text-sm text-base-content/60">
         <p>
-          These summaries are stored encrypted on the Oasis Sapphire blockchain.
-          Only you can decrypt and view them with your connected wallet.
+          These summaries are stored encrypted on the Oasis Sapphire blockchain. Only you can decrypt and view them with
+          your connected wallet.
         </p>
       </div>
     </div>

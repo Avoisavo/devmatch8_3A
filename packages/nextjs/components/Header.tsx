@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { parseEther } from "viem";
 import { hardhat } from "viem/chains";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
-import { Bars3Icon, BugAntIcon, DocumentTextIcon, KeyIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BugAntIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import { FaucetButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -29,11 +29,7 @@ export const menuLinks: HeaderMenuLink[] = [
     href: "/debug",
     icon: <BugAntIcon className="h-4 w-4" />,
   },
-  {
-    label: "SIWE Test",
-    href: "/siwe-test",
-    icon: <KeyIcon className="h-4 w-4" />,
-  },
+
   {
     label: "Chat Summaries",
     href: "/chat-summaries",
@@ -88,23 +84,23 @@ export const Header = () => {
     burgerMenuRef?.current?.removeAttribute("open");
   });
 
-  // Check if user is already subscribed
+  // Check if user has an active subscription
   const { data: isSubscribed } = useScaffoldReadContract({
-    contractName: "SubscriptionContract",
-    functionName: "isUserSubscribed",
+    contractName: "SubscriptionAndSummaryFactory",
+    functionName: "isActive",
     args: [address],
   });
 
-  // Get subscription count
-  const { data: subscriptionCount } = useScaffoldReadContract({
-    contractName: "SubscriptionContract",
-    functionName: "getSubscriptionCount",
+  // Get subscription info
+  const { data: subscriptionInfo } = useScaffoldReadContract({
+    contractName: "SubscriptionAndSummaryFactory",
+    functionName: "subscriptions",
     args: [address],
   });
 
   // Write contract function
   const { writeContractAsync: subscribeAsync } = useScaffoldWriteContract({
-    contractName: "SubscriptionContract",
+    contractName: "SubscriptionAndSummaryFactory",
   });
 
   const handleSubscribe = async () => {
@@ -116,7 +112,7 @@ export const Header = () => {
     try {
       setIsLoading(true);
       const result = await subscribeAsync({
-        functionName: "subscribe",
+        functionName: "paySubscription",
         value: parseEther("1"), // 1 ROSE token
       });
 
@@ -175,7 +171,7 @@ export const Header = () => {
           {isLoading
             ? "Processing..."
             : isSubscribed
-              ? `Subscribe Again (${subscriptionCount || 0} total)`
+              ? `Subscribe Again (Active until ${subscriptionInfo ? new Date(Number(subscriptionInfo) * 1000).toLocaleDateString() : "N/A"})`
               : "Subscribe (1 ROSE)"}
         </button>
 

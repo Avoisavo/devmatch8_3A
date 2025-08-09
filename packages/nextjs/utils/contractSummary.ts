@@ -1,5 +1,6 @@
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+
 // import type { ChatSummary } from "./chatSummary";
 
 // Simple encryption utility (for demo - in production use proper encryption)
@@ -19,22 +20,22 @@ export const decryptSummary = (encryptedData: string): string => {
 
 // Convert string to bytes for contract storage
 export const stringToBytes = (str: string): `0x${string}` => {
-  return `0x${Buffer.from(str, 'utf8').toString('hex')}`;
+  return `0x${Buffer.from(str, "utf8").toString("hex")}`;
 };
 
 // Convert bytes from contract to string
 export const bytesToString = (bytes: `0x${string}`): string => {
-  return Buffer.from(bytes.slice(2), 'hex').toString('utf8');
+  return Buffer.from(bytes.slice(2), "hex").toString("utf8");
 };
 
 // Hook for contract-based summary operations
 export const useContractSummary = () => {
   const { address } = useAccount();
 
-  // Get user's contract address from factory
+  // Get user's summary contract address from factory
   const { data: userContractAddress } = useScaffoldReadContract({
-    contractName: "ContractFactory",
-    functionName: "getUserContract",
+    contractName: "SubscriptionAndSummaryFactory",
+    functionName: "userSummaryContract",
     args: [address],
   });
 
@@ -42,7 +43,7 @@ export const useContractSummary = () => {
   const storeSummaryInContract = async (
     sessionId: string,
     summary: string,
-    writeContractAsync: any
+    writeContractAsync: any,
   ): Promise<boolean> => {
     try {
       if (!userContractAddress || userContractAddress === "0x0000000000000000000000000000000000000000") {
@@ -56,14 +57,12 @@ export const useContractSummary = () => {
       // Encrypt and convert summary to bytes
       const encryptedSummary = encryptSummary(summary);
       const summaryBytes = stringToBytes(encryptedSummary);
-      const sessionIdBytes = `0x${sessionId}` as `0x${string}`;
 
       // Call the contract
       const tx = await writeContractAsync({
-        contractName: "UserContract", 
-        functionName: "storeChatSummary",
-        args: [sessionIdBytes, summaryBytes],
-        address: userContractAddress,
+        contractName: "UserSummaryStorage",
+        functionName: "addSummary",
+        args: [summaryBytes],
       });
 
       console.log("Summary stored in contract successfully:", tx);
@@ -80,7 +79,7 @@ export const useContractSummary = () => {
     encryptSummary,
     decryptSummary,
     stringToBytes,
-    bytesToString
+    bytesToString,
   };
 };
 
@@ -93,16 +92,16 @@ export const generateSessionId = (): string => {
 
 export const useSessionManagement = () => {
   const { address } = useAccount();
-  
-  // Get user's contract address
+
+  // Get user's summary contract address
   const { data: userContractAddress } = useScaffoldReadContract({
-    contractName: "ContractFactory",
-    functionName: "getUserContract",
+    contractName: "SubscriptionAndSummaryFactory",
+    functionName: "userSummaryContract",
     args: [address],
   });
 
-  // Write contract hook - don't specify contractName for dynamic address usage
-  const { writeContractAsync } = useScaffoldWriteContract("UserContract");
+  // Write contract hook - use the factory to create summary contracts
+  const { writeContractAsync } = useScaffoldWriteContract("SubscriptionAndSummaryFactory");
 
   // Create new session in contract
   const createSession = async (): Promise<string | null> => {
@@ -112,15 +111,14 @@ export const useSessionManagement = () => {
         return generateSessionId();
       }
 
-      console.log("Creating new session in contract:", userContractAddress);
-      
+      console.log("Getting or creating user summary contract:", userContractAddress);
+
       const tx = await writeContractAsync({
-        functionName: "createNewSession",
+        functionName: "getOrCreateMySummaryContract",
       });
 
-      console.log("New session created:", tx);
-      // The actual session ID would be in the transaction receipt/events
-      // For now, generate a local session ID
+      console.log("Summary contract ready:", tx);
+      // Generate a session ID for local tracking
       return generateSessionId();
     } catch (error) {
       console.error("Failed to create session in contract:", error);
@@ -132,6 +130,6 @@ export const useSessionManagement = () => {
   return {
     userContractAddress,
     createSession,
-    writeContractAsync
+    writeContractAsync,
   };
 };

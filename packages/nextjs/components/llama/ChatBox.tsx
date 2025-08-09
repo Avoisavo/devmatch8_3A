@@ -1,14 +1,24 @@
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
 import { useChat, useOllama } from "../../hooks/llama";
 import type { OllamaMessage } from "../../types/llama";
 import { AI_PERSONALITIES } from "../../utils/aiPersonalities";
 import { useContractSummary } from "../../utils/contractSummary";
 import { MessageInput } from "./MessageInput";
 import { MessageList } from "./MessageList";
+import { useAccount } from "wagmi";
 
 export const ChatBox = () => {
-  const { messages, isLoading, addMessage, addAIMessage, updateLastMessage, setLoading, setError, endChat, currentSessionId } = useChat();
+  const {
+    messages,
+    isLoading,
+    addMessage,
+    addAIMessage,
+    updateLastMessage,
+    setLoading,
+    setError,
+    endChat,
+    currentSessionId,
+  } = useChat();
   const { sendMessageWithPersonality, testConnection } = useOllama();
   const { address } = useAccount();
   const { userContractAddress } = useContractSummary();
@@ -78,9 +88,9 @@ export const ChatBox = () => {
 
   const handleEndChat = async () => {
     try {
-      await endChat(sendMessageWithPersonality, async (summary) => {
+      await endChat(sendMessageWithPersonality, async summary => {
         console.log("Chat summary generated:", summary);
-        
+
         // Try to store in contract if enabled and user has contract
         if (contractStoreEnabled && currentSessionId && userContractAddress && address) {
           try {
@@ -88,7 +98,7 @@ export const ChatBox = () => {
             console.log("Would store in contract:", {
               sessionId: currentSessionId,
               userContract: userContractAddress,
-              summaryPreview: summary.summary.substring(0, 100)
+              summaryPreview: summary.summary.substring(0, 100),
             });
             // For now, just log the attempt
             console.log("Contract storage would be attempted here");
@@ -109,16 +119,14 @@ export const ChatBox = () => {
       {/* Session and Contract Status */}
       <div className="mb-2 text-xs text-base-content/60">
         <div className="flex justify-between items-center">
-          <span>
-            Session: {currentSessionId ? `${currentSessionId.substring(0, 8)}...` : "Not started"}
-          </span>
+          <span>Session: {currentSessionId ? `${currentSessionId.substring(0, 8)}...` : "Not started"}</span>
           <div className="flex items-center gap-2">
             <span>Contract: {userContractAddress ? "✓ Connected" : "⚠ Not found"}</span>
             <label className="flex items-center gap-1">
               <input
                 type="checkbox"
                 checked={contractStoreEnabled}
-                onChange={(e) => setContractStoreEnabled(e.target.checked)}
+                onChange={e => setContractStoreEnabled(e.target.checked)}
                 className="checkbox checkbox-xs"
               />
               <span>Store in contract</span>
@@ -126,7 +134,7 @@ export const ChatBox = () => {
           </div>
         </div>
       </div>
-      
+
       <div className="flex-1 mb-4 overflow-y-auto min-h-0">
         <MessageList messages={messages} />
       </div>
