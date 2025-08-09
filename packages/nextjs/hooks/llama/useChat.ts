@@ -115,7 +115,7 @@ export const useChat = () => {
         const summary = await generateChatSummary(state.messages, sendMessageWithPersonality);
         const chatSummary = createChatSummary(state.messages, summary);
 
-        // Save to JSON/localStorage first (as backup)
+        // Save summary to localStorage only (no file save or download)
         await saveChatSummary(chatSummary, currentSessionId || undefined);
 
         // Try to store in contract if session exists

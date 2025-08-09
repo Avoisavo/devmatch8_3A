@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useChat, useOllama } from "../../hooks/llama";
 import type { OllamaMessage } from "../../types/llama";
 import { AI_PERSONALITIES } from "../../utils/aiPersonalities";
-import { useContractSummary } from "../../utils/contractSummary";
 import { MessageInput } from "./MessageInput";
 import { MessageList } from "./MessageList";
 import { useAccount } from "wagmi";
@@ -25,15 +24,12 @@ export const ChatBox = () => {
   } = useChat();
   const { sendMessageWithPersonality, testConnection } = useOllama();
   const { address } = useAccount();
-  const { userContractAddress } = useContractSummary();
-  const { encrypt, ensureSignature } = useSummaryCrypto();
+  const { encrypt } = useSummaryCrypto();
   const selectedNetwork = useSelectedNetwork();
   const { writeContractAsync: writeFactoryAsync } = useScaffoldWriteContract({
     contractName: "SubscriptionAndSummaryFactory",
   });
   const [showEndChatButton, setShowEndChatButton] = useState(false);
-  const [contractStoreEnabled, setContractStoreEnabled] = useState(true);
-  const [forceSignature, setForceSignature] = useState(false);
   const [lastTxHash, setLastTxHash] = useState<string | null>(null);
 
   useEffect(() => {
@@ -104,37 +100,27 @@ export const ChatBox = () => {
       await endChat(sendMessageWithPersonality, async summary => {
         console.log("Chat summary generated:", summary);
 
-        // Try to store in contract via factory.addMySummary if enabled and prerequisites met
-        if (contractStoreEnabled && currentSessionId) {
-          try {
-            if (!address) {
-              notification.error("Connect your wallet to store the summary on-chain");
-              return;
-            }
-            // Prompt signature to derive encryption key
-            const signToastId = notification.loading("Please sign the message in your wallet to encrypt the summary...");
-            if (forceSignature) {
-              await ensureSignature(); // always force wallet signature prompt
-            }
-            const encrypted = await encrypt(summary.summary);
-            notification.remove(signToastId);
-
-            const asBytes = stringToBytes(encrypted);
-
-            // Call SubscriptionAndSummaryFactory.addMySummary(bytes)
-            const hash = (await writeFactoryAsync({
-              functionName: "addMySummary",
-              args: [asBytes],
-            })) as string;
-
-            setLastTxHash(hash);
-            console.log("addMySummary tx hash:", hash);
-            // useTransactor inside the scaffold hook shows the waiting and completion toasts with explorer link.
-
-          } catch (contractError) {
-            console.error("Failed to store in contract:", contractError);
-            setError("Failed to store summary in contract, but saved locally");
+        // Try to store in contract via factory.addMySummary
+        try {
+          if (!address) {
+            // No wallet connected, skip on-chain store silently
+            return;
           }
+          const signToastId = notification.loading("Please sign the message in your wallet to encrypt the summary...");
+          const encrypted = await encrypt(summary.summary);
+          notification.remove(signToastId);
+
+          const asBytes = stringToBytes(encrypted);
+
+          // Call SubscriptionAndSummaryFactory.addMySummary(bytes)
+          const hash = (await writeFactoryAsync({
+            functionName: "addMySummary",
+            args: [asBytes],
+          })) as string;
+
+          setLastTxHash(hash);
+        } catch (_e) {
+          // Suppress UI error per request
         }
       });
     } catch (error) {
@@ -145,34 +131,6 @@ export const ChatBox = () => {
 
   return (
     <div className="bg-base-100 rounded-lg p-4 h-full flex flex-col">
-      {/* Session and Contract Status */}
-      <div className="mb-2 text-xs text-base-content/60">
-        <div className="flex justify-between items-center">
-          <span>Session: {currentSessionId ? `${currentSessionId.substring(0, 8)}...` : "Not started"}</span>
-          <div className="flex items-center gap-3">
-            <span>Contract: {userContractAddress ? "✓ Connected" : "⚠ Not found"}</span>
-            <label className="flex items-center gap-1">
-              <input
-                type="checkbox"
-                checked={contractStoreEnabled}
-                onChange={e => setContractStoreEnabled(e.target.checked)}
-                className="checkbox checkbox-xs"
-              />
-              <span>Store in contract</span>
-            </label>
-            <label className="flex items-center gap-1">
-              <input
-                type="checkbox"
-                checked={forceSignature}
-                onChange={e => setForceSignature(e.target.checked)}
-                className="checkbox checkbox-xs"
-              />
-              <span>Prompt signature every time</span>
-            </label>
-          </div>
-        </div>
-      </div>
-
       <div className="flex-1 mb-2 overflow-y-auto min-h-0">
         <MessageList messages={messages} />
       </div>

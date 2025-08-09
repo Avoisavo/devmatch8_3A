@@ -40,46 +40,18 @@ export const generateChatSummary = async (
 };
 
 export const saveChatSummary = async (
-  summary: ChatSummary, 
+  summary: ChatSummary,
   sessionId?: string,
   _saveToContract: boolean = true
 ): Promise<void> => {
   try {
-    // Save to localStorage for persistence
+    // Save to localStorage for persistence only (no filesystem or downloads)
     const summaries = JSON.parse(localStorage.getItem("chat-summaries") || "[]");
     const updatedSummary = { ...summary, sessionId, contractStored: false };
     summaries.push(updatedSummary);
     localStorage.setItem("chat-summaries", JSON.stringify(summaries));
 
-    // Send to API to save to filesystem (keep as backup)
-    const response = await fetch("/api/save-summary", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedSummary),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to save summary to server");
-    }
-
-    const result = await response.json();
-    console.log(`Chat summary saved to server: ${result.filePath}`);
-
-    // Also trigger a download for the user
-    const summaryData = JSON.stringify(updatedSummary, null, 2);
-    const blob = new Blob([summaryData], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${summary.id}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    console.log("Chat summary saved successfully to JSON and localStorage");
+    console.log("Chat summary saved to localStorage");
   } catch (error) {
     console.error("Error saving chat summary:", error);
     throw error;
