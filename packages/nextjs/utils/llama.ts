@@ -2,7 +2,7 @@ import type { OllamaRequest, OllamaResponse } from "../types/llama";
 
 export const OLLAMA_BASE_URL = process.env.NEXT_PUBLIC_OLLAMA_URL || "http://localhost:11434";
 
-export const DEFAULT_MODEL = "gemma3:4b";
+export const DEFAULT_MODEL = process.env.NEXT_PUBLIC_OLLAMA_MODEL || "llama3.2:3b";
 
 export const createOllamaRequest = (
   messages: { role: "user" | "assistant" | "system"; content: string }[],
@@ -30,7 +30,8 @@ export const callOllamaAPI = async (request: OllamaRequest): Promise<OllamaRespo
     });
 
     if (!response.ok) {
-      throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+      const text = await response.text().catch(() => "");
+      throw new Error(`Ollama API error: ${response.status} ${response.statusText}${text ? ` - ${text}` : ""}`);
     }
 
     return response.json();
@@ -52,7 +53,8 @@ export const streamOllamaAPI = async (request: OllamaRequest, onChunk: (chunk: s
   });
 
   if (!response.ok) {
-    throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+    const text = await response.text().catch(() => "");
+    throw new Error(`Ollama API error: ${response.status} ${response.statusText}${text ? ` - ${text}` : ""}`);
   }
 
   const reader = response.body?.getReader();
