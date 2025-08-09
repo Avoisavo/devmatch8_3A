@@ -1,0 +1,14 @@
+{
+  "name": "summary-vault-subgraph",
+  "version": "1.0.0",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "create-local": "graph create --node http://localhost:8020 devmatch/summary-vault",
+    "deploy-local": "graph deploy --node http://localhost:8020 --ipfs http://localhost:5001 devmatch/summary-vault"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.56.0",
+    "@graphprotocol/graph-ts": "^0.33.0"
+  }
+} 
