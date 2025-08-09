@@ -1,10 +1,11 @@
 "use client";
 
-import React, { Suspense, useEffect, useRef } from "react";
+import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Character from "./Character";
-import { Environment, OrbitControls, PerspectiveCamera, useGLTF } from "@react-three/drei";
+import { Environment, OrbitControls, PerspectiveCamera, useCursor, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Group, Vector3 } from "three";
+import { Box3, BoxGeometry, Group, Vector3 } from "three";
 
 interface FloorProps {
   scale?: [number, number, number];
@@ -191,14 +192,6 @@ const KitchenFridgeSmallModel: React.FC<ModelProps> = props => {
   const { scene } = useGLTF("/models/furnitures/kitchenFridgeSmall.glb");
   return <primitive object={scene} position={[0, 0, 0]} scale={[0.75, 0.65, 0.75]} {...props} />;
 };
-const BooksModel: React.FC<ModelProps> = props => {
-  const { scene } = useGLTF("/models/furnitures/books.glb");
-  return <primitive object={scene} position={[0, 0, 0]} scale={[1, 1, 1]} {...props} />;
-};
-const Books2Model: React.FC<ModelProps> = props => {
-  const { scene } = useGLTF("/models/furnitures/books2.glb");
-  return <primitive object={scene} position={[0, 0, 0]} scale={[1, 1, 1]} {...props} />;
-};
 const LampRoundTableModel: React.FC<ModelProps> = props => {
   const { scene } = useGLTF("/models/furnitures/lampRoundTable.glb");
   return <primitive object={scene} position={[0, 0, 0]} scale={[0.65, 0.65, 0.65]} {...props} />;
@@ -292,6 +285,52 @@ const KitchenCabinetDrawer1Model: React.FC<ModelProps> = props => {
   return <primitive object={scene} position={[0, 0, 0]} scale={[1, 1, 1]} {...props} />;
 };
 
+// Clickable wrapper that adds a black border overlay and navigates to chat summaries
+const ClickableBooks: React.FC<{
+  gltfPath: string;
+  position: [number, number, number];
+  rotation?: [number, number, number];
+}> = ({ gltfPath, position, rotation = [0, 0, 0] }) => {
+  const { scene } = useGLTF(gltfPath);
+  const router = useRouter();
+  const [hovered, setHovered] = useState(false);
+  useCursor(hovered);
+
+  const { boxSize, boxCenter } = useMemo(() => {
+    const bbox = new Box3().setFromObject(scene);
+    const size = new Vector3();
+    bbox.getSize(size);
+    const center = new Vector3();
+    bbox.getCenter(center);
+    return { boxSize: size, boxCenter: center };
+  }, [scene]);
+
+  return (
+    <group
+      position={position}
+      rotation={rotation}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+      onClick={() => router.push("/chat-summaries")}
+    >
+      <primitive object={scene} />
+      {/* Invisible hitbox to make clicking reliable across the whole book volume */}
+      <mesh
+        position={[boxCenter.x, boxCenter.y, boxCenter.z] as [number, number, number]}
+        // events bubble to the parent group handlers
+      >
+        <boxGeometry args={[boxSize.x * 1.1, boxSize.y * 1.1, boxSize.z * 1.1]} />
+        <meshBasicMaterial transparent opacity={0} />
+      </mesh>
+      {/* 3D border aligned to the book's bounding box; slightly padded */}
+      <lineSegments position={[boxCenter.x, boxCenter.y, boxCenter.z] as [number, number, number]} visible>
+        <edgesGeometry args={[new BoxGeometry(boxSize.x * 1.08, boxSize.y * 1.08, boxSize.z * 1.08)]} />
+        <lineBasicMaterial color={"black"} linewidth={2} transparent opacity={hovered ? 1 : 0.8} />
+      </lineSegments>
+    </group>
+  );
+};
+
 const RoomGeometry: React.FC<FloorProps> = ({ scale = [1, 1, 1] }) => {
   const floorRef = useRef<Group>(null);
 
@@ -330,8 +369,8 @@ const RoomGeometry: React.FC<FloorProps> = ({ scale = [1, 1, 1] }) => {
       <LoungeSofaModel position={[25, 0, 2]} rotation={[0, Math.PI / 100000000, 0]} />
       <DeskModel position={[22, 0, 5.5]} rotation={[0, Math.PI / 100000000000, 0]} />
       <KitchenFridgeSmallModel position={[22.2, 0, 8.2]} rotation={[0, Math.PI, 0]} />
-      <BooksModel position={[19, 3.85, 7]} rotation={[0, Math.PI, 0]} />
-      <Books2Model position={[18, 3.85, 7]} rotation={[0, Math.PI, 0]} />
+      <ClickableBooks gltfPath="/models/furnitures/books.glb" position={[19, 3.85, 7]} rotation={[0, Math.PI, 0]} />
+      <ClickableBooks gltfPath="/models/furnitures/books2.glb" position={[18, 3.85, 7]} rotation={[0, Math.PI, 0]} />
       <LampRoundTableModel position={[21.2, 3.85, 6]} rotation={[0, Math.PI / 4, 0]} />
       <KitchenCoffeeMachineModel position={[-17, 4.3, 14.6]} rotation={[0, Math.PI / -2, 0]} />
       <PlantSmall2Model position={[17, 4, 7.5]} rotation={[0, Math.PI / 6, 0]} />
