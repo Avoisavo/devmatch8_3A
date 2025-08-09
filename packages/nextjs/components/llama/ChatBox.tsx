@@ -5,7 +5,11 @@ import { AI_PERSONALITIES } from "../../utils/aiPersonalities";
 import { MessageInput } from "./MessageInput";
 import { MessageList } from "./MessageList";
 
-export const ChatBox = () => {
+interface ChatBoxProps {
+  onTalkingChange?: (talking: boolean) => void;
+}
+
+export const ChatBox = ({ onTalkingChange }: ChatBoxProps) => {
   const { messages, isLoading, addMessage, addAIMessage, updateLastMessage, setLoading, setError, endChat } = useChat();
   const { sendMessageWithPersonality, testConnection } = useOllama();
   const [showEndChatButton, setShowEndChatButton] = useState(false);
@@ -30,6 +34,7 @@ export const ChatBox = () => {
     try {
       setError(null);
       setLoading(true);
+      onTalkingChange?.(true);
 
       // Add user message
       addMessage({ role: "user", content });
@@ -53,7 +58,7 @@ export const ChatBox = () => {
 
         // Stream the response for this personality
         let fullResponse = "";
-        await sendMessageWithPersonality(ollamaMessages, personality.id, "gemma3:4b", (chunk: string) => {
+        await sendMessageWithPersonality(ollamaMessages, personality.id, undefined, (chunk: string) => {
           fullResponse += chunk;
           updateLastMessage(fullResponse);
         });
@@ -70,11 +75,13 @@ export const ChatBox = () => {
       setError(err instanceof Error ? err.message : "Failed to send message");
     } finally {
       setLoading(false);
+      onTalkingChange?.(false);
     }
   };
 
   const handleEndChat = async () => {
     try {
+      onTalkingChange?.(false);
       await endChat(sendMessageWithPersonality, summary => {
         console.log("Chat summary generated:", summary);
       });
