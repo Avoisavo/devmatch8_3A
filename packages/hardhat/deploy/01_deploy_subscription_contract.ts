@@ -11,10 +11,12 @@ const deploySubscriptionContract: DeployFunction = async function (hre: HardhatR
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
+  const siweDomain = process.env.SIWE_DOMAIN || (hre.network.name.includes("sapphire") ? "sapphire" : "localhost");
+
   await deploy("SubscriptionContract", {
     from: deployer,
     // Contract constructor arguments
-    args: [deployer],
+    args: [deployer, siweDomain],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.

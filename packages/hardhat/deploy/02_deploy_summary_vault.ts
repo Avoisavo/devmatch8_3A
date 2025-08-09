@@ -5,9 +5,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
+  const siweDomain = process.env.SIWE_DOMAIN || (hre.network.name.includes("sapphire") ? "sapphire" : "localhost");
+
   await deploy("SummaryVault", {
     from: deployer,
-    args: [],
+    args: [siweDomain],
     log: true,
     autoMine: true,
     ...(hre.network.name.includes("sapphire")
