@@ -221,6 +221,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **The Graph Subgraph**: [View on Graph Explorer]
 - **Smart Contracts**: [View on Oasis Explorer]
 
+## Team
+- Tan Zhi Wei
+- Mark Chye Wen Soon
+- Jeffrey Loo Jia Quan
+- Ng Zher Xian
+
+
+
+
+
+
 ---
 
 <p align="center">
