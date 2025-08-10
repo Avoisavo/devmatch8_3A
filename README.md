@@ -27,6 +27,8 @@
   - Contract: `packages/hardhat/contracts/SubscriptionContract.sol`
 - **2) AI Generates a Summary**
   - Users chat with the AI UI (`packages/nextjs/components/llama`) and receive a structured summary.
+- Use ROFL red pills. https://explorer.oasis.io/testnet/sapphire/rofl/app/rofl1qpjkkh872rnewkmj9zusyevwhx5gr88qjv2443v4?q=rofl1qpjkkh872rnewkmj9zusyevwhx5gr88qjv2443v4
+
 - **3) Client-side Encryption**
   - Before saving, summaries are encrypted locally in the browser using AES-GCM derived from a signed message.
   - Hook: `packages/nextjs/hooks/useSummaryCrypto.ts` (`encrypt`, `decrypt`).
