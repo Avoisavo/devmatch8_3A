@@ -63,10 +63,14 @@ export const useSubgraphSummaries = () => {
 
         const mapped: ChatSummary[] = rows.map(r => {
           const ts = Number(r.timestamp);
-          const createdAt = new Date(ts * 1000).toISOString();
+          const date = new Date(ts * 1000);
+          const createdAt = date.toISOString();
+          // Convert to local date to match calendar display
+          const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+          const localDateString = localDate.toISOString().split("T")[0];
           return {
             id: r.summaryId,
-            date: createdAt.split("T")[0],
+            date: localDateString,
             summary: "", // content is private on Sapphire; fetch via contract getSummary(id) as needed
             messageCount: 0,
             participants: ["User", "Assistant"],

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import Floor from "../components/Floor";
 import { NoHydration } from "../components/NoHydration";
 import { ChatBox, ResultPanel } from "../components/llama";
 import { SubscribeButton } from "../components/scaffold-eth/SubscribeButton";
@@ -8,6 +10,7 @@ import type { NextPage } from "next";
 
 const Home: NextPage = () => {
   const { messages, isLoading, error, clearMessages } = useChat();
+  const [isTalking, setIsTalking] = useState(false);
 
   return (
     <NoHydration
@@ -37,6 +40,11 @@ const Home: NextPage = () => {
       }
     >
       <div className="flex flex-col h-full pt-16 relative">
+        {/* VISIBLE FLOOR SECTION */}
+        <div className="w-full" style={{ height: "60vh", position: "relative" }}>
+          <Floor gatherAndTalk={isTalking} />
+        </div>
+
         {/* Subscribe Button with Sky Background */}
         <div className="w-full mb-4 flex-1">
           <SubscribeButton />
@@ -50,7 +58,7 @@ const Home: NextPage = () => {
         {/* ChatBox fixed at bottom overlaying the sky */}
         <div className="fixed bottom-4 left-4 right-4 z-50 h-80">
           <div className="bg-base-100/90 backdrop-blur-sm rounded-lg border border-base-300 shadow-lg h-full">
-            <ChatBox />
+            <ChatBox onTalkingChange={setIsTalking} />
           </div>
         </div>
       </div>

@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import SkyBackground from "../../components/livingroom/SkyBackground";
-import { useSubgraphSummaries } from "../../hooks/useSubgraphSummaries";
-import { useSummaryContent } from "../../hooks/useSummaryContent";
-import { useSummaryCrypto } from "../../hooks/useSummaryCrypto";
+import { useChatSummariesLocalOnly } from "../../hooks/useChatSummariesLocalOnly";
 import folderAnimation from "../../public/folder-animation.json";
 import { AnimatePresence, motion } from "framer-motion";
 import Lottie from "lottie-react";
@@ -37,59 +35,9 @@ interface CalendarEvent {
 }
 
 const ChatSummariesPage = () => {
-  const { summaries, loading, error, deleteSummary, exportSummary } = useSubgraphSummaries();
+  const { summaries, loading, error, deleteSummary, exportSummary } = useChatSummariesLocalOnly();
 
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
-  const { content: selectedContent, loading: contentLoading } = useSummaryContent(selectedEvent?.id);
-  const { decrypt } = useSummaryCrypto();
-  const [decrypted, setDecrypted] = useState<string>("");
-  const [decLoading, setDecLoading] = useState<boolean>(false);
-  const [decError, setDecError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setDecrypted("");
-    setDecError(null);
-    if (!selectedContent) return;
-
-    // Try to detect our envelope format and decrypt; otherwise show as-is
-    (async () => {
-      try {
-        const maybeEnv = JSON.parse(selectedContent);
-        if (maybeEnv && typeof maybeEnv === "object" && "ct" in maybeEnv && "iv" in maybeEnv && "salt" in maybeEnv) {
-          setDecLoading(true);
-          const plain = await decrypt(selectedContent);
-          // If the decrypted text is a JSON object with a `summary` field, show only that
-          try {
-            const parsed = JSON.parse(plain);
-            if (parsed && typeof parsed === "object" && typeof parsed.summary === "string") {
-              setDecrypted(parsed.summary);
-            } else {
-              setDecrypted(plain);
-            }
-          } catch {
-            setDecrypted(plain);
-          }
-        } else {
-          // Not an encrypted envelope; if it's JSON with `summary`, extract it
-          try {
-            if (typeof selectedContent === "string") {
-              const parsed = JSON.parse(selectedContent);
-              if (parsed && typeof parsed === "object" && typeof parsed.summary === "string") {
-                setDecrypted(parsed.summary);
-                return;
-              }
-            }
-          } catch {}
-          setDecrypted(selectedContent);
-        }
-      } catch {
-        // Not JSON, treat as plaintext
-        setDecrypted(selectedContent);
-      } finally {
-        setDecLoading(false);
-      }
-    })();
-  }, [selectedContent, decrypt]);
   const [showCalendar, setShowCalendar] = useState(false);
   const [julyFolderOpen, setJulyFolderOpen] = useState(false);
   const [augustFolderOpen, setAugustFolderOpen] = useState(false);
@@ -172,8 +120,12 @@ const ChatSummariesPage = () => {
         }))
       : exampleEvents;
 
-  const julyEvents = displayEvents.filter(event => new Date(event.date).getMonth() === 6); // July is month 6
-  const augustEvents = displayEvents.filter(event => new Date(event.date).getMonth() === 7); // August is month 7
+  const julyEvents = displayEvents
+    .filter(event => new Date(event.date).getMonth() === 6) // July is month 6
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Latest first
+  const augustEvents = displayEvents
+    .filter(event => new Date(event.date).getMonth() === 7) // August is month 7
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Latest first
 
   const handleJulyFolderClick = () => {
     if (julyAnimating) return;
@@ -731,7 +683,6 @@ const ChatSummariesPage = () => {
                                   cursor: isEventDate ? "pointer" : "default",
                                   border: isToday && !isEventDate ? "2px solid #ff9800" : "none",
                                   position: "relative",
-                                  paddingBottom: isEventDate ? "14px" : undefined,
                                 }}
                                 onClick={() => {
                                   if (isEventDate) {
@@ -834,7 +785,11 @@ const ChatSummariesPage = () => {
                                             handleFileClick(event);
                                             handleJulyCalendarClose();
                                           }}
-                                          title={event.title}
+                                          title={
+                                            event.summary.length > 100
+                                              ? event.summary.substring(0, 100) + "..."
+                                              : event.summary
+                                          }
                                         />
                                       );
                                     })}
@@ -975,7 +930,6 @@ const ChatSummariesPage = () => {
                                   cursor: isEventDate ? "pointer" : "default",
                                   border: isToday && !isEventDate ? "2px solid #4caf50" : "none",
                                   position: "relative",
-                                  paddingBottom: isEventDate ? "14px" : undefined,
                                 }}
                                 onClick={() => {
                                   if (isEventDate) {
@@ -1078,7 +1032,11 @@ const ChatSummariesPage = () => {
                                             handleFileClick(event);
                                             handleAugustCalendarClose();
                                           }}
-                                          title={event.title}
+                                          title={
+                                            event.summary.length > 100
+                                              ? event.summary.substring(0, 100) + "..."
+                                              : event.summary
+                                          }
                                         />
                                       );
                                     })}
@@ -1215,24 +1173,16 @@ const ChatSummariesPage = () => {
                       {selectedEvent.messageCount} messages
                     </span>
                   </div>
-                  <div style={{ margin: "0 0 16px 0" }}>
-                    <p
-                      style={{
-                        fontSize: "14px",
-                        color: "#495057",
-                        lineHeight: "1.5",
-                        margin: 0,
-                        wordBreak: "break-word",
-                        whiteSpace: "pre-wrap",
-                      }}
-                    >
-                      {contentLoading || decLoading
-                        ? "Loading content from Sapphire…"
-                        : decError
-                          ? `Decrypt error: ${decError}`
-                          : decrypted || "(No content)"}
-                    </p>
-                  </div>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "#495057",
+                      lineHeight: "1.5",
+                      margin: "0 0 16px 0",
+                    }}
+                  >
+                    {selectedEvent.summary}
+                  </p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
                     {selectedEvent.tags.map((tag, index) => (
                       <span
