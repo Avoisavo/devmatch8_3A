@@ -1,80 +1,226 @@
-# 🏗 Scaffold-ETH 2
+# 🧠 Chain-Of-Thoughts
 
 <h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
+  <a href="#how-our-project-works">How It Works</a> |
+  <a href="#system-architecture-high-level-overview">Architecture</a> |
+  <a href="#tech-stack-overview-%F0%9F%9B%A0%EF%B8%8F">Tech Stack</a> |
+  <a href="#how-to-run-this-project-%F0%9F%9A%80">Getting Started</a>
 </h4>
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+🚀 **Chain-Of-Thoughts** is a decentralized AI-powered chat summary platform that leverages **The Graph Protocol** for indexing blockchain data and **Oasis Sapphire** for privacy-preserving smart contracts. Store, organize, and retrieve your chat summaries with full privacy and transparency.
 
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
+⚡ **Key Features:**
+- 🔐 **Privacy-First**: Chat summaries stored securely on Oasis Sapphire with confidential smart contracts
+- 📊 **Decentralized Indexing**: Real-time data querying powered by The Graph Protocol
+- 🎯 **Smart Organization**: Calendar-based UI for easy summary navigation
+- 💰 **Subscription Model**: ROSE token-based subscription system
+- 🌟 **Modern UI**: Beautiful, responsive interface with interactive animations
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+---
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+## How Our Project Works
 
-## Requirements
+**Where mental wellness meets uncompromising privacy — your confidential AI companion, secured by Oasis Sapphire.**
 
-Before you begin, you need to install the following tools:
+- **1) Connect & (Optionally) Subscribe**
+  - Users connect their wallet in the Next.js app and can subscribe via `SubscriptionContract.subscribe()` to unlock features.
+  - Contract: `packages/hardhat/contracts/SubscriptionContract.sol`
+- **2) AI Generates a Summary**
+  - Users chat with the AI UI (`packages/nextjs/components/llama`) and receive a structured summary.
+- **3) Client-side Encryption**
+  - Before saving, summaries are encrypted locally in the browser using AES-GCM derived from a signed message.
+  - Hook: `packages/nextjs/hooks/useSummaryCrypto.ts` (`encrypt`, `decrypt`).
+- **4) Confidential On-chain Storage (Sapphire)**
+  - Encrypted summaries are saved on-chain via `SummaryVault.saveSummary(id, content, title)`.
+  - Contract: `packages/hardhat/contracts/SummaryVault.sol` emits `SummarySaved(user, id, title, timestamp)` for public indexing.
+- **5) Subgraph Indexing for Fast Metadata Queries**
+  - A subgraph listens to `SummarySaved` and stores only metadata (`user`, `summaryId`, `title`, `timestamp`).
+  - Subgraph: `subgraphs/summary-vault` with `src/mapping.ts` handler.
+- **6) Frontend Retrieval**
+  - Metadata: `packages/nextjs/hooks/useSubgraphSummaries.ts` queries the subgraph.
+  - Content: `packages/nextjs/hooks/useSummaryContent.ts` reads `getSummary(id)` and decrypts locally when needed.
+- **7) Calendar UI**
+  - Summaries are displayed in a calendar-first UI at `packages/nextjs/app/chat-summaries/page.tsx`.
 
-- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+---
 
-## Quickstart
+## System Architecture High-Level Overview
 
-To get started with Scaffold-ETH 2, follow the steps below:
+```mermaid
+graph TB
+    subgraph "Frontend Layer"
+        A[Next.js App]
+        B[React Components]
+        C[Wagmi + Viem Hooks]
+    end
 
-1. Install dependencies if it was skipped in CLI:
+    subgraph "Blockchain Layer"
+        D[Oasis Sapphire Paratime (confidential EVM)]
+        E[SummaryVault Contract]
+        F[Subscription Contract]
+    end
 
+    subgraph "Indexing Layer"
+        G[Graph Node (Docker)]
+        H[Summary Vault Subgraph]
+        I[GraphQL API]
+    end
+
+    subgraph "AI Layer"
+        J[Ollama/LLaMA]
+        K[Chat Processing]
+        L[Summary Generation]
+    end
+
+    A --> C
+    C --> E
+    C --> F
+    E --> G
+    G --> H
+    H --> I
+    I --> A
+    J --> K
+    K --> L
+    L --> A
 ```
-cd my-dapp-example
+
+### 🔄 Data Flow
+- **Frontend** (Next.js/React) → **Encrypts** summary locally → **Saves** to `SummaryVault` (Sapphire)
+- `SummaryVault` → **Emits** `SummarySaved` → **Subgraph** indexes metadata
+- UI → **Queries** subgraph for metadata → **Reads** full content via `getSummary(id)` when needed → **Decrypts** client-side
+
+---
+
+## Tech Stack Overview 🛠️
+
+- **Frontend**
+  - **Next.js 15**, **React 19**
+  - **Tailwind CSS + DaisyUI**, **Framer Motion**, **Lottie**
+  - **Wagmi v2** + **Viem 2.x**, **@tanstack/react-query**
+- **Blockchain**
+  - **Solidity ^0.8.20**, **Hardhat**
+  - **Oasis Sapphire** SDKs: `@oasisprotocol/sapphire-*`
+- **Indexing**
+  - **The Graph** (Graph Node via Docker), Subgraph (AssemblyScript), GraphQL API
+- **AI**
+  - **Ollama** with LLaMA models, custom chat UI (`packages/nextjs/components/llama`)
+- **Privacy**
+  - Client-side encryption via WebCrypto (AES-GCM), Sapphire confidential runtime
+
+---
+
+## How to Run This Project 🚀
+
+### Prerequisites
+- Node.js >= 20.18.3, Yarn, Git, Docker (for local Graph Node), Ollama (optional for AI)
+
+### Quick Start
+
+1) Install dependencies
+```bash
 yarn install
 ```
 
-2. Run a local network in the first terminal:
-
-```
+2) Start local blockchain and deploy contracts
+```bash
+# Terminal 1: local chain
 yarn chain
-```
 
-This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/hardhat/hardhat.config.ts`.
-
-3. On a second terminal, deploy the test contract:
-
-```
+# Terminal 2: deploy
 yarn deploy
 ```
 
-This command deploys a test smart contract to the local network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
-
-4. On a third terminal, start your NextJS app:
-
-```
+3) Start the frontend
+```bash
+# Terminal 3
 yarn start
 ```
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+4) Start Graph Node locally (optional but recommended for subgraph)
+```bash
+# Terminal 4
+cd graph_node/docker
+docker compose up -d
+```
 
-Run smart contract test with `yarn hardhat:test`
+5) Deploy the subgraph (local)
+```bash
+cd subgraphs/summary-vault
+yarn install
+yarn codegen
+yarn build
+yarn create-local
+yarn deploy-local
+```
 
-- Edit your smart contracts in `packages/hardhat/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/hardhat/deploy`
+6) Configure the frontend to point to your subgraph (if needed)
+```bash
+# defaults to http://localhost:8000/subgraphs/name/devmatch/summary-vault
+# can override via env var
+export NEXT_PUBLIC_SUBGRAPH_URL=http://localhost:8000/subgraphs/name/devmatch/summary-vault
+```
 
+---
 
-## Documentation
+## Important Code Directories 📂
 
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
+```
+devmatch8_3A/
+├── packages/
+│   ├── hardhat/                      # Smart Contracts
+│   │   ├── contracts/
+│   │   │   ├── SummaryVault.sol      # Encrypted summary storage + events
+│   │   │   └── SubscriptionContract.sol  # ROSE-based subscription
+│   │   └── deploy/                   # 00_*, 01_*, 02_* deployment scripts
+│   └── nextjs/                       # Frontend (Next.js App Router)
+│       ├── app/
+│       │   ├── page.tsx              # Landing + chat surface
+│       │   └── chat-summaries/       # Calendar UI for summaries
+│       ├── components/               # UI components (incl. llama/)
+│       ├── hooks/
+│       │   ├── useSummaryCrypto.ts   # Client-side AES-GCM encrypt/decrypt
+│       │   ├── useSubgraphSummaries.ts # Subgraph metadata fetch
+│       │   └── useSummaryContent.ts  # Reads on-chain content via hook
+│       └── contracts/deployedContracts.ts # Auto-generated addresses/ABIs
+├── subgraphs/
+│   └── summary-vault/
+│       ├── schema.graphql            # Entity schema (Summary)
+│       ├── subgraph.yaml             # Data source + handlers
+│       └── src/mapping.ts            # handleSummarySaved
+└── graph_node/docker/                # Local Graph Node docker-compose
+```
 
-To know more about its features, check out our [website](https://scaffoldeth.io).
+---
 
-## Contributing to Scaffold-ETH 2
+## Future Implementations 🚀
 
-We welcome contributions to Scaffold-ETH 2!
+- **Trusted AI compute**: Integrate ROFL/TEE-based confidential inference for end-to-end encrypted processing
+- **Per-user vaults**: Factory that deploys a dedicated vault per user with owner-only access controls
+- **Zero-Knowledge features**: Prove integrity/authorship of summaries without revealing contents
+- **Selective sharing**: Permissioned sharing and revocation
+- **Enhanced search**: Local full-text search with privacy-preserving indexing
+- **Multi-chain**: Expand to Ethereum L2s (Arbitrum/Polygon), with Sapphire as the privacy layer
+- **Mobile apps**: iOS/Android clients with local encryption
 
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🔗 Links
+
+- **Live Demo**: [Coming Soon]
+- **Documentation**: [Coming Soon]
+- **The Graph Subgraph**: [View on Graph Explorer]
+- **Smart Contracts**: [View on Oasis Explorer]
+
+---
+
+<p align="center">
+  <strong>Built with ❤️ using The Graph Protocol, Oasis Sapphire, and Scaffold-ETH 2</strong>
+</p>
