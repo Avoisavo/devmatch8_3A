@@ -1233,7 +1233,7 @@ const ChatSummariesPage = () => {
                 {/* Action Buttons */}
                 <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
                   <button
-                    onClick={() => exportSummary(selectedEvent)}
+                    onClick={() => {}} disabled
                     style={{
                       flex: 1,
                       background: "#007bff",

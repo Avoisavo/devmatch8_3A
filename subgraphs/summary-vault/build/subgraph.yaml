@@ -17,8 +17,8 @@ dataSources:
         - Summary
       abis:
         - name: SummaryVault
-          file: SummaryVault/abis/SummaryVault.json
+          file: SummaryVault\abis\SummaryVault.json
       eventHandlers:
         - event: SummarySaved(indexed address,string,string,uint256)
           handler: handleSummarySaved
-      file: SummaryVault/SummaryVault.wasm
+      file: SummaryVault\SummaryVault.wasm

@@ -6,8 +6,499 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
   23295: {
+    ContractFactory: {
+      address: "0x4443AB7aFC3ee225596627f1D42c879aa5f02Cf3",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "_owner",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "_userContractTemplate",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [],
+          name: "ContractCreationFailed",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "FailedDeployment",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "balance",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "needed",
+              type: "uint256",
+            },
+          ],
+          name: "InsufficientBalance",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "InvalidSubscriptionContract",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "InvalidTemplateAddress",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "InvalidUserAddress",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "OwnableInvalidOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+          ],
+          name: "OwnableUnauthorizedAccount",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "UnauthorizedCaller",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "UserAlreadyHasContract",
+          type: "error",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "oldVersion",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "newVersion",
+              type: "uint256",
+            },
+          ],
+          name: "FactoryVersionUpdated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "previousOwner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "OwnershipTransferred",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "oldContract",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newContract",
+              type: "address",
+            },
+          ],
+          name: "SubscriptionContractUpdated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "userContract",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "subscriptionId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+          ],
+          name: "UserContractCreated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "oldTemplate",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newTemplate",
+              type: "address",
+            },
+          ],
+          name: "UserContractTemplateUpdated",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "contractAddress",
+              type: "address",
+            },
+          ],
+          name: "checkIsUserContract",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "contractOwners",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "subscriptionId",
+              type: "uint256",
+            },
+          ],
+          name: "createUserContract",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "factoryVersion",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getFactoryInfo",
+          outputs: [
+            {
+              internalType: "address",
+              name: "_subscriptionContract",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "_userContractTemplate",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "_totalUserContracts",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_factoryVersion",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getTotalUserContracts",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+          ],
+          name: "getUserContract",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "isUserContract",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "renounceOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "_subscriptionContract",
+              type: "address",
+            },
+          ],
+          name: "setSubscriptionContract",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "_template",
+              type: "address",
+            },
+          ],
+          name: "setUserContractTemplate",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "subscriptionContract",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "totalUserContracts",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "transferOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_newVersion",
+              type: "uint256",
+            },
+          ],
+          name: "upgradeFactoryVersion",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "userContractTemplate",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "userContracts",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {
+        owner: "@openzeppelin/contracts/access/Ownable.sol",
+        renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+        transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+      },
+      deployedOnBlock: 12937001,
+    },
     SubscriptionContract: {
-      address: "0xd850394CfC6cD17138b31eE8b3d618658d3bD9C6",
+      address: "0x7F05F10896983e29e5fE4F1c9208B821164Ed332",
       abi: [
         {
           inputs: [
@@ -19,6 +510,25 @@ const deployedContracts = {
           ],
           stateMutability: "nonpayable",
           type: "constructor",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "oldFactory",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newFactory",
+              type: "address",
+            },
+          ],
+          name: "ContractFactoryUpdated",
+          type: "event",
         },
         {
           anonymous: false,
@@ -109,10 +619,48 @@ const deployedContracts = {
           type: "event",
         },
         {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "subscriber",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "userContract",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+          ],
+          name: "UserContractCreated",
+          type: "event",
+        },
+        {
           inputs: [],
           name: "cancelSubscription",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "contractFactory",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -196,6 +744,19 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "_contractFactory",
+              type: "address",
+            },
+          ],
+          name: "setContractFactory",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
@@ -314,11 +875,212 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 12930144,
+      deployedOnBlock: 12936997,
     },
-    SummaryVault: {
-      address: "0x2FD12dbBCeD15a3CFB6401357288D6dDBC811aBE",
+    UserContract: {
+      address: "0xB5445983854DaC50F1B4F3edC7c57C5e0a3Cd31C",
       abi: [
+        {
+          inputs: [],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [],
+          name: "ContractNotInitialized",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "InvalidMessageOrder",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "InvalidSessionId",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "OwnableInvalidOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+          ],
+          name: "OwnableUnauthorizedAccount",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SessionAlreadyExists",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SessionNotFound",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "UnauthorizedAccess",
+          type: "error",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "messageOrder",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+          ],
+          name: "ChatMessageStored",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+          ],
+          name: "ChatSessionClosed",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+          ],
+          name: "ChatSessionCreated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+          ],
+          name: "ChatSummaryStored",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "previousOwner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "OwnershipTransferred",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "oldTEE",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newTEE",
+              type: "address",
+            },
+          ],
+          name: "TEEContractUpdated",
+          type: "event",
+        },
         {
           anonymous: false,
           inputs: [
@@ -330,15 +1092,9 @@ const deployedContracts = {
             },
             {
               indexed: false,
-              internalType: "string",
-              name: "id",
-              type: "string",
-            },
-            {
-              indexed: false,
-              internalType: "string",
-              name: "title",
-              type: "string",
+              internalType: "uint256",
+              name: "subscriptionId",
+              type: "uint256",
             },
             {
               indexed: false,
@@ -347,18 +1103,663 @@ const deployedContracts = {
               type: "uint256",
             },
           ],
-          name: "SummarySaved",
+          name: "UserContractInitialized",
           type: "event",
         },
         {
           inputs: [
             {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "chatMessages",
+          outputs: [
+            {
+              internalType: "bytes",
+              name: "encryptedUserMessage",
+              type: "bytes",
+            },
+            {
+              internalType: "bytes",
+              name: "encryptedAIResponse",
+              type: "bytes",
+            },
+            {
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "messageOrder",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          name: "chatSessions",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "createdAt",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "lastActivity",
+              type: "uint256",
+            },
+            {
+              internalType: "bool",
+              name: "isActive",
+              type: "bool",
+            },
+            {
+              internalType: "uint256",
+              name: "messageCount",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          name: "chatSummaries",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes",
+              name: "encryptedSummary",
+              type: "bytes",
+            },
+            {
+              internalType: "uint256",
+              name: "createdAt",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "messageCount",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+          ],
+          name: "closeSession",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "createNewSession",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "createdAt",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+          ],
+          name: "deleteSession",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getActiveSessions",
+          outputs: [
+            {
+              internalType: "bytes32[]",
+              name: "",
+              type: "bytes32[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getAllSessionIds",
+          outputs: [
+            {
+              internalType: "bytes32[]",
+              name: "",
+              type: "bytes32[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+          ],
+          name: "getChatHistory",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "bytes",
+                  name: "encryptedUserMessage",
+                  type: "bytes",
+                },
+                {
+                  internalType: "bytes",
+                  name: "encryptedAIResponse",
+                  type: "bytes",
+                },
+                {
+                  internalType: "uint256",
+                  name: "timestamp",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "messageOrder",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct UserContract.ChatMessage[]",
+              name: "",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+          ],
+          name: "getChatSummary",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "bytes32",
+                  name: "sessionId",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "bytes",
+                  name: "encryptedSummary",
+                  type: "bytes",
+                },
+                {
+                  internalType: "uint256",
+                  name: "createdAt",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "messageCount",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct UserContract.ChatSummary",
+              name: "",
+              type: "tuple",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+          ],
+          name: "getSessionInfo",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "bytes32",
+                  name: "sessionId",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "uint256",
+                  name: "createdAt",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "lastActivity",
+                  type: "uint256",
+                },
+                {
+                  internalType: "bool",
+                  name: "isActive",
+                  type: "bool",
+                },
+                {
+                  internalType: "uint256",
+                  name: "messageCount",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct UserContract.ChatSession",
+              name: "",
+              type: "tuple",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+          ],
+          name: "getSessionMessageCount",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getUserInfo",
+          outputs: [
+            {
+              internalType: "address",
+              name: "_user",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "_subscriptionId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_createdAt",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_totalSessions",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "_user",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "_subscriptionId",
+              type: "uint256",
+            },
+          ],
+          name: "initialize",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "isInitialized",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "renounceOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          name: "sessionMessageCount",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "_teeContract",
+              type: "address",
+            },
+          ],
+          name: "setTEEContract",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes",
+              name: "encryptedUserMessage",
+              type: "bytes",
+            },
+            {
+              internalType: "bytes",
+              name: "encryptedAIResponse",
+              type: "bytes",
+            },
+          ],
+          name: "storeChatMessage",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "sessionId",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes",
+              name: "encryptedSummary",
+              type: "bytes",
+            },
+          ],
+          name: "storeChatSummary",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "subscriptionId",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "teeContract",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "transferOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "user",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "userSessionIds",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {
+        owner: "@openzeppelin/contracts/access/Ownable.sol",
+        renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+        transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+      },
+      deployedOnBlock: 12937003,
+    },
+    OwnerMessage: {
+      address: "0x579C47310e0F98427cA52deb900eC3096C14C38a",
+      abi: [
+        {
+          inputs: [
+            {
               internalType: "string",
-              name: "id",
+              name: "initialMessage",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "domain",
+              type: "string",
+            },
+            {
+              internalType: "address",
+              name: "customOwner",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [],
+          name: "A13e_RevokedAuthToken",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweAuth_AddressMismatch",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweAuth_ChainIdMismatch",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweAuth_DomainMismatch",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweAuth_Expired",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweAuth_NotBeforeInFuture",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweParser_InvalidAddressLength",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweParser_InvalidNonce",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "domain",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
               type: "string",
             },
           ],
-          name: "getSummary",
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes",
+              name: "token",
+              type: "bytes",
+            },
+          ],
+          name: "getMessage",
           outputs: [
             {
               internalType: "string",
@@ -373,31 +1774,369 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "string",
-              name: "id",
+              name: "siweMsg",
               type: "string",
             },
             {
-              internalType: "string",
-              name: "content",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "title",
-              type: "string",
+              components: [
+                {
+                  internalType: "bytes32",
+                  name: "r",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "bytes32",
+                  name: "s",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "uint256",
+                  name: "v",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct SignatureRSV",
+              name: "sig",
+              type: "tuple",
             },
           ],
-          name: "saveSummary",
+          name: "login",
+          outputs: [
+            {
+              internalType: "bytes",
+              name: "",
+              type: "bytes",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "newMessage",
+              type: "string",
+            },
+            {
+              internalType: "bytes",
+              name: "token",
+              type: "bytes",
+            },
+          ],
+          name: "setMessage",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
         },
       ],
+      inheritedFunctions: {
+        domain: "@oasisprotocol/sapphire-contracts/contracts/auth/SiweAuth.sol",
+        login: "@oasisprotocol/sapphire-contracts/contracts/auth/SiweAuth.sol",
+      },
+      deployedOnBlock: 12937004,
+    },
+    SubscriptionAndSummaryFactory: {
+      address: "0xed7dfe909ee5bd0cbdb252389d791152618AB64E",
+      abi: [
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "expiresAt",
+              type: "uint256",
+            },
+          ],
+          name: "SubscriptionPaid",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "address",
+              name: "summaryContract",
+              type: "address",
+            },
+          ],
+          name: "UserSummaryContractCreated",
+          type: "event",
+        },
+        {
+          inputs: [],
+          name: "ONE_MONTH",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes",
+              name: "summary",
+              type: "bytes",
+            },
+          ],
+          name: "addMySummary",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "index",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getOrCreateMySummaryContract",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+          ],
+          name: "getOrCreateUserSummaryContract",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+          ],
+          name: "isActive",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "paySubscription",
+          outputs: [],
+          stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "subscriptions",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "expiresAt",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "userSummaryContract",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
       inheritedFunctions: {},
-      deployedOnBlock: 12930146,
+      deployedOnBlock: 12937005,
+    },
+    UserSummaryStorage: {
+      address: "0xAa07501592b4fB550a7304639363E6B0F3003F87",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "_user",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "index",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+          ],
+          name: "SummaryAdded",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes",
+              name: "summary",
+              type: "bytes",
+            },
+          ],
+          name: "addSummary",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "index",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "index",
+              type: "uint256",
+            },
+          ],
+          name: "getSummary",
+          outputs: [
+            {
+              internalType: "bytes",
+              name: "",
+              type: "bytes",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "summariesCount",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "user",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {},
+      deployedOnBlock: 12937006,
     },
     YourContract: {
-      address: "0x1fA004A0B1A3Ab69f495F5f81a530Eb5c1C00076",
+      address: "0x037200cf02815e7f0B6d6eFa610D4B187780D9E8",
       abi: [
         {
           inputs: [
@@ -538,453 +2277,137 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 12930141,
+      deployedOnBlock: 12936995,
     },
   },
   31337: {
-    SubscriptionContract: {
-      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-      abi: [
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_owner",
-              type: "address",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "constructor",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "timestamp",
-              type: "uint256",
-            },
-          ],
-          name: "FundsWithdrawn",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "newPrice",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "timestamp",
-              type: "uint256",
-            },
-          ],
-          name: "PriceUpdated",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "subscriber",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "timestamp",
-              type: "uint256",
-            },
-          ],
-          name: "SubscriptionCancelled",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "subscriber",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "timestamp",
-              type: "uint256",
-            },
-          ],
-          name: "SubscriptionPurchased",
-          type: "event",
-        },
-        {
-          inputs: [],
-          name: "cancelSubscription",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getBalance",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_user",
-              type: "address",
-            },
-          ],
-          name: "getSubscriptionCount",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_user",
-              type: "address",
-            },
-          ],
-          name: "getSubscriptionTime",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "_user",
-              type: "address",
-            },
-          ],
-          name: "isUserSubscribed",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "owner",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_newPrice",
-              type: "uint256",
-            },
-          ],
-          name: "setSubscriptionPrice",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "subscribe",
-          outputs: [],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          name: "subscribers",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          name: "subscriptionCount",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "subscriptionPrice",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          name: "subscriptionTimestamp",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "totalSubscribers",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "withdraw",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          stateMutability: "payable",
-          type: "receive",
-        },
-      ],
-      inheritedFunctions: {},
-      deployedOnBlock: 3,
-    },
-    SummaryVault: {
-      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-      abi: [
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "user",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "string",
-              name: "id",
-              type: "string",
-            },
-            {
-              indexed: false,
-              internalType: "string",
-              name: "title",
-              type: "string",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "timestamp",
-              type: "uint256",
-            },
-          ],
-          name: "SummarySaved",
-          type: "event",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
-              name: "id",
-              type: "string",
-            },
-          ],
-          name: "getSummary",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
-              name: "id",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "content",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "title",
-              type: "string",
-            },
-          ],
-          name: "saveSummary",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-      ],
-      inheritedFunctions: {},
-      deployedOnBlock: 5,
-    },
-    YourContract: {
+    OwnerMessage: {
       address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
           inputs: [
             {
-              internalType: "address",
-              name: "_owner",
-              type: "address",
+              internalType: "string",
+              name: "initialMessage",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "domain",
+              type: "string",
             },
           ],
           stateMutability: "nonpayable",
           type: "constructor",
         },
         {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "address",
-              name: "greetingSetter",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "string",
-              name: "newGreeting",
-              type: "string",
-            },
-            {
-              indexed: false,
-              internalType: "bool",
-              name: "premium",
-              type: "bool",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "value",
-              type: "uint256",
-            },
-          ],
-          name: "GreetingChange",
-          type: "event",
+          inputs: [],
+          name: "A13e_RevokedAuthToken",
+          type: "error",
         },
         {
           inputs: [],
-          name: "greeting",
+          name: "SiweAuth_AddressMismatch",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweAuth_ChainIdMismatch",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweAuth_DomainMismatch",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweAuth_Expired",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweAuth_NotBeforeInFuture",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweParser_InvalidAddressLength",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "SiweParser_InvalidNonce",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "domain",
           outputs: [
             {
               internalType: "string",
               name: "",
               type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes",
+              name: "token",
+              type: "bytes",
+            },
+          ],
+          name: "getMessage",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "siweMsg",
+              type: "string",
+            },
+            {
+              components: [
+                {
+                  internalType: "bytes32",
+                  name: "r",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "bytes32",
+                  name: "s",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "uint256",
+                  name: "v",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct SignatureRSV",
+              name: "sig",
+              type: "tuple",
+            },
+          ],
+          name: "login",
+          outputs: [
+            {
+              internalType: "bytes",
+              name: "",
+              type: "bytes",
             },
           ],
           stateMutability: "view",
@@ -1004,76 +2427,28 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "premium",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [
             {
               internalType: "string",
-              name: "_newGreeting",
+              name: "newMessage",
               type: "string",
             },
-          ],
-          name: "setGreeting",
-          outputs: [],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "totalCounter",
-          outputs: [
             {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
+              internalType: "bytes",
+              name: "token",
+              type: "bytes",
             },
           ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          name: "userGreetingCounter",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "withdraw",
+          name: "setMessage",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
         },
-        {
-          stateMutability: "payable",
-          type: "receive",
-        },
       ],
-      inheritedFunctions: {},
+      inheritedFunctions: {
+        domain: "@oasisprotocol/sapphire-contracts/contracts/auth/SiweAuth.sol",
+        login: "@oasisprotocol/sapphire-contracts/contracts/auth/SiweAuth.sol",
+      },
       deployedOnBlock: 1,
     },
   },

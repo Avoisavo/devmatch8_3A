@@ -18,6 +18,25 @@
         {
           "indexed": true,
           "internalType": "address",
+          "name": "oldFactory",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newFactory",
+          "type": "address"
+        }
+      ],
+      "name": "ContractFactoryUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
           "name": "owner",
           "type": "address"
         },
@@ -101,10 +120,48 @@
       "type": "event"
     },
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "subscriber",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "userContract",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "UserContractCreated",
+      "type": "event"
+    },
+    {
       "inputs": [],
       "name": "cancelSubscription",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "contractFactory",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -188,6 +245,19 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contractFactory",
+          "type": "address"
+        }
+      ],
+      "name": "setContractFactory",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -353,6 +423,9 @@
       "isUserSubscribed(address)": {
         "notice": "Check if an address is subscribed"
       },
+      "setContractFactory(address)": {
+        "notice": "Set contract factory address Only callable by owner"
+      },
       "setSubscriptionPrice(uint256)": {
         "notice": "Owner function to update subscription price"
       },
@@ -369,7 +442,7 @@
   "storageLayout": {
     "storage": [
       {
-        "astId": 8,
+        "astId": 9169,
         "contract": "contracts/SubscriptionContract.sol:SubscriptionContract",
         "label": "subscriptionPrice",
         "offset": 0,
@@ -377,7 +450,7 @@
         "type": "t_uint256"
       },
       {
-        "astId": 11,
+        "astId": 9172,
         "contract": "contracts/SubscriptionContract.sol:SubscriptionContract",
         "label": "totalSubscribers",
         "offset": 0,
@@ -385,27 +458,35 @@
         "type": "t_uint256"
       },
       {
-        "astId": 15,
+        "astId": 9174,
+        "contract": "contracts/SubscriptionContract.sol:SubscriptionContract",
+        "label": "contractFactory",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_address"
+      },
+      {
+        "astId": 9178,
         "contract": "contracts/SubscriptionContract.sol:SubscriptionContract",
         "label": "subscribers",
         "offset": 0,
-        "slot": "2",
+        "slot": "3",
         "type": "t_mapping(t_address,t_bool)"
       },
       {
-        "astId": 19,
+        "astId": 9182,
         "contract": "contracts/SubscriptionContract.sol:SubscriptionContract",
         "label": "subscriptionTimestamp",
         "offset": 0,
-        "slot": "3",
+        "slot": "4",
         "type": "t_mapping(t_address,t_uint256)"
       },
       {
-        "astId": 23,
+        "astId": 9186,
         "contract": "contracts/SubscriptionContract.sol:SubscriptionContract",
         "label": "subscriptionCount",
         "offset": 0,
-        "slot": "4",
+        "slot": "5",
         "type": "t_mapping(t_address,t_uint256)"
       }
     ],

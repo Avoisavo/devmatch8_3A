@@ -192,6 +192,14 @@ const KitchenFridgeSmallModel: React.FC<ModelProps> = props => {
   const { scene } = useGLTF("/models/furnitures/kitchenFridgeSmall.glb");
   return <primitive object={scene} position={[0, 0, 0]} scale={[0.75, 0.65, 0.75]} {...props} />;
 };
+const BooksModel: React.FC<ModelProps> = props => {
+  const { scene } = useGLTF("/models/furnitures/books.glb");
+  return <primitive object={scene} position={[0, 0, 0]} scale={[1, 1, 1]} {...props} />;
+};
+const Books2Model: React.FC<ModelProps> = props => {
+  const { scene } = useGLTF("/models/furnitures/books2.glb");
+  return <primitive object={scene} position={[0, 0, 0]} scale={[1, 1, 1]} {...props} />;
+};
 const LampRoundTableModel: React.FC<ModelProps> = props => {
   const { scene } = useGLTF("/models/furnitures/lampRoundTable.glb");
   return <primitive object={scene} position={[0, 0, 0]} scale={[0.65, 0.65, 0.65]} {...props} />;
@@ -330,7 +338,7 @@ const ClickableBooks: React.FC<{
     </group>
   );
 };
-
+>>>>>>> 31d0cca9560144b41f8327a3004cecb8aea6556c
 const RoomGeometry: React.FC<FloorProps> = ({ scale = [1, 1, 1] }) => {
   const floorRef = useRef<Group>(null);
 

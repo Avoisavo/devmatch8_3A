@@ -75,6 +75,19 @@ export function useSummaryCrypto() {
     return sig;
   }, [address, signMessageAsync]);
 
+  // Force a signature prompt regardless of cache
+  const ensureSignature = useCallback(async (): Promise<string> => {
+    if (!address) throw new Error("Wallet not connected");
+    const message = `${KEY_DERIVATION_MESSAGE_PREFIX}\nAddress: ${address}`;
+    const sig = await signMessageAsync({ message });
+    cachedSignatureRef.current = sig;
+    return sig;
+  }, [address, signMessageAsync]);
+
+  const resetSignatureCache = useCallback(() => {
+    cachedSignatureRef.current = null;
+  }, []);
+
   const encrypt = useCallback(
     async (plaintext: string): Promise<string> => {
       const signature = await getOrSign();
@@ -115,5 +128,5 @@ export function useSummaryCrypto() {
     [getOrSign],
   );
 
-  return { encrypt, decrypt };
+  return { encrypt, decrypt, ensureSignature, resetSignatureCache };
 }

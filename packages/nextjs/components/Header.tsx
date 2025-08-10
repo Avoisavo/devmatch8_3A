@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,9 +30,15 @@ export const menuLinks: HeaderMenuLink[] = [
     href: "/debug",
     icon: <BugAntIcon className="h-4 w-4" />,
   },
+
   {
     label: "Chat Summaries",
     href: "/chat-summaries",
+    icon: <DocumentTextIcon className="h-4 w-4" />,
+  },
+  {
+    label: "Contract Summaries",
+    href: "/contract-summaries",
     icon: <DocumentTextIcon className="h-4 w-4" />,
   },
 ];
@@ -73,34 +79,29 @@ export const Header = () => {
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
   const [isLoading, setIsLoading] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const burgerMenuRef = useRef<HTMLDetailsElement>(null);
   useOutsideClick(burgerMenuRef, () => {
     burgerMenuRef?.current?.removeAttribute("open");
   });
 
-  // Check if user is already subscribed (only on client side)
+  // Check if user has an active subscription
   const { data: isSubscribed } = useScaffoldReadContract({
-    contractName: "SubscriptionContract",
-    functionName: "isUserSubscribed",
-    args: mounted && address ? [address] : [undefined],
+    contractName: "SubscriptionAndSummaryFactory",
+    functionName: "isActive",
+    args: [address],
   });
 
-  // Get subscription count (only on client side)
-  const { data: subscriptionCount } = useScaffoldReadContract({
-    contractName: "SubscriptionContract",
-    functionName: "getSubscriptionCount",
-    args: mounted && address ? [address] : [undefined],
+  // Get subscription info
+  const { data: subscriptionInfo } = useScaffoldReadContract({
+    contractName: "SubscriptionAndSummaryFactory",
+    functionName: "subscriptions",
+    args: [address],
   });
 
   // Write contract function
   const { writeContractAsync: subscribeAsync } = useScaffoldWriteContract({
-    contractName: "SubscriptionContract",
+    contractName: "SubscriptionAndSummaryFactory",
   });
 
   const handleSubscribe = async () => {
@@ -112,7 +113,7 @@ export const Header = () => {
     try {
       setIsLoading(true);
       const result = await subscribeAsync({
-        functionName: "subscribe",
+        functionName: "paySubscription",
         value: parseEther("1"), // 1 ROSE token
       });
 
@@ -193,7 +194,7 @@ export const Header = () => {
             {isLoading
               ? "Processing..."
               : isSubscribed
-                ? `Subscribe Again (${subscriptionCount || 0} total)`
+                ? `Subscribe Again (Active until ${subscriptionInfo ? new Date(Number(subscriptionInfo) * 1000).toLocaleDateString() : "N/A"})`
                 : "Subscribe (1 ROSE)"}
           </button>
 

@@ -1,0 +1,34 @@
+# ROFL manifest for the RedPill proxy service
+# You can initialize/update this via `oasis rofl init` and `oasis rofl update`.
+# The CLI will also maintain some fields (like allowed enclaves) after builds.
+
+name: redpill-proxy
+version: 0.1.0
+tee: tdx
+kind: containers
+
+# Requested resources for the VM that will run your container(s)
+resources:
+  memory: 512       # MiB
+  cpus: 1
+  storage:
+    kind: disk-persistent
+    size: 4096      # MiB
+
+# Network-specific deployment policy. The CLI will fill in additional details
+# (e.g., app ID, enclaves) after `oasis rofl create` and `oasis rofl build`.
+deployments:
+  default:
+    policy:
+      quotes:
+        pcs:
+          tcb_validity_period: 30
+          min_tcb_evaluation_data_number: 17
+          tdx: {}
+      # The list of allowed enclave IDs will be auto-populated by `oasis rofl build`.
+      enclaves: []
+      # Allow any endorsed node (you can restrict by node IDs later if desired)
+      endorsements:
+        - any: {}
+      # Instance pays the fees (alternative: endorsing_node)
+      fees: instance

@@ -1,7 +1,6 @@
-import { useCallback, useState } from "react";
-import { useSummaryCrypto } from "../../hooks/useSummaryCrypto";
+import { useCallback, useState, useEffect } from "react";
 import type { ChatMessage, ChatState } from "../../types/llama";
-import { useScaffoldWriteContract } from "../scaffold-eth";
+import { useSessionManagement } from "../../utils/contractSummary";
 
 // Helper function to generate unique IDs (client-side only)
 const generateUniqueId = (role: "user" | "assistant"): string => {
@@ -17,10 +16,21 @@ export const useChat = () => {
     isLoading: false,
     error: null,
   });
-  // Second-layer encryption (wallet-signature derived key)
-  const { encrypt } = useSummaryCrypto();
-  // Writer for Sapphire SummaryVault
-  const { writeContractAsync: writeSummaryAsync } = useScaffoldWriteContract({ contractName: "SummaryVault" });
+  
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const { createSession } = useSessionManagement();
+
+  // Create a new session when chat starts (first message)
+  useEffect(() => {
+    if (state.messages.length === 1 && !currentSessionId) {
+      createSession().then(sessionId => {
+        if (sessionId) {
+          setCurrentSessionId(sessionId);
+          console.log("New chat session created:", sessionId);
+        }
+      });
+    }
+  }, [state.messages.length, currentSessionId, createSession]);
 
   const addMessage = useCallback((message: Omit<ChatMessage, "id" | "timestamp">) => {
     const newMessage: ChatMessage = {
@@ -69,6 +79,7 @@ export const useChat = () => {
 
   const clearMessages = useCallback(() => {
     setState((prev: ChatState) => ({ ...prev, messages: [] }));
+    setCurrentSessionId(null); // Reset session when clearing messages
   }, []);
 
   const endChat = useCallback(
@@ -104,17 +115,22 @@ export const useChat = () => {
         const summary = await generateChatSummary(state.messages, sendMessageWithPersonality);
         const chatSummary = createChatSummary(state.messages, summary);
 
-        await saveChatSummary(chatSummary);
+        // Save summary to localStorage only (no file save or download)
+        await saveChatSummary(chatSummary, currentSessionId || undefined);
 
-        // Encrypt and save to Sapphire (double encryption: AES-GCM + Sapphire)
-        try {
-          const envelope = await encrypt(JSON.stringify(chatSummary));
-          const title = `Chat Summary ${chatSummary.id}`;
-          await writeSummaryAsync({ functionName: "saveSummary", args: [chatSummary.id, envelope, title] });
-        } catch (chainErr) {
-          // Non-fatal: still saved locally/file. Log chain error.
-          console.error("Failed to save summary on Sapphire:", chainErr);
+        // Try to store in contract if session exists
+        if (currentSessionId) {
+          try {
+            console.log("Attempting to store summary in contract for session:", currentSessionId);
+            // We'll need to import this hook properly in the component level
+            // For now, just save locally with session info
+          } catch (error) {
+            console.error("Failed to store in contract, but saved locally:", error);
+          }
         }
+
+        // TODO: Implement Sapphire contract integration for summary storage
+        console.log("Chat summary saved locally:", chatSummary.id);
 
         // Call the callback if provided
         if (onSummaryGenerated) {
@@ -126,13 +142,14 @@ export const useChat = () => {
         setLoading(false);
       }
     },
-    [state.messages, addAIMessage, setLoading, setError],
+    [state.messages, addAIMessage, setLoading, setError, currentSessionId],
   );
 
   return {
     messages: state.messages,
     isLoading: state.isLoading,
     error: state.error,
+    currentSessionId,
     addMessage,
     addAIMessage,
     updateLastMessage,

@@ -60,30 +60,13 @@ export const useChatSummariesLocalOnly = () => {
     setSummaries(prev => prev.map(s => (s.id === id ? { ...s, ...updates } : s)));
   };
 
-  const exportSummary = (summary: ChatSummary) => {
-    const dataStr = JSON.stringify(summary, null, 2);
-    const dataBlob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${summary.id}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  // Downloads are disabled per request
+  const exportSummary = (_summary: ChatSummary) => {
+    console.warn("Export disabled");
   };
 
   const exportAllSummaries = () => {
-    const dataStr = JSON.stringify(summaries, null, 2);
-    const dataBlob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "all-summaries.json";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    console.warn("Export all disabled");
   };
 
   const clearAllSummaries = () => {
